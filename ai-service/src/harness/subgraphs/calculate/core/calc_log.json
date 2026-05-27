@@ -1,0 +1,7793 @@
+[
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "0Cr25Al5",
+      "temperature": 1200
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-23T11:50:57.312461"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.0
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 251.7024,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.0283,
+        "unit": "Ω/m",
+        "source": "database"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 8894.077739,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 8894.077738515904,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-23T11:58:50.080334"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 4.545455,
+        "unit": "A"
+      }
+    ],
+    "result": 4.545454545454546,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-23T12:01:32.562034"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      }
+    ],
+    "result": 48.4,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-23T12:01:32.598007"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "power": 0,
+      "voltage": 0,
+      "temperature": 0,
+      "surface_load": 1.0
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-23T12:02:01.655315"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_meter",
+    "input_params": {
+      "material": "Cr20Ni80",
+      "diameter": 2.1
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 65.974619,
+        "unit": "cm²/m"
+      }
+    ],
+    "result": 65.9746185,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-23T12:02:47.227836"
+  },
+  {
+    "type": "calculation",
+    "target": "length",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220,
+      "material": "0Cr25Al5",
+      "diameter": 8
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.0283,
+        "unit": "Ω/m",
+        "source": "database"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "长度",
+        "type": "calculation",
+        "formula": "resistance / (resistance_per_meter * temperature_coeff)",
+        "result": 1710.24735,
+        "unit": "m"
+      }
+    ],
+    "result": 1710.2473498233217,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-23T12:03:06.115039"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "0Cr25Al5",
+      "temperature": 1200
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-23T12:05:22.681249"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "voltage": 220,
+      "temperature": 800,
+      "material": "0Cr21Al6Nb"
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-23T12:08:49.051217"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_meter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "material": "合金带"
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "diameter",
+      "name": "直径",
+      "unit": "mm",
+      "dependencies": [
+        "material",
+        "surface_area",
+        "alloy_shape"
+      ],
+      "type": "query"
+    },
+    "error": "未找到匹配的规格: 材料=合金带, 表面积=1377.4104683195592cm²/Ω, 形状=合金丝",
+    "timestamp": "2026-01-23T12:09:31.508185"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "material": "合金带"
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "resistivity",
+      "name": "电阻率",
+      "unit": "10⁻⁶Ω·m",
+      "dependencies": [
+        "material"
+      ],
+      "type": "query"
+    },
+    "error": "未找到材料 '合金带' 的电阻率数据",
+    "timestamp": "2026-01-23T12:09:33.302528"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {},
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      },
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-23T13:09:00.314402"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "power": 10000.0,
+      "temperature": 1200.0
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-23T16:37:44.431956"
+  },
+  {
+    "type": "calculation",
+    "target": "power",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "power": 10000.0,
+      "voltage": 220.0,
+      "current": 25.0,
+      "temperature": 1200.0
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 10000.0,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-23T16:49:58.654707"
+  },
+  {
+    "type": "calculation",
+    "target": "power",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "power": 10000.0,
+      "voltage": 220.0,
+      "current": 25.0,
+      "temperature": 1200.0
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 10000.0,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-23T17:03:03.325470"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "power": 10000.0,
+      "voltage": 220.0,
+      "current": 25.0,
+      "temperature": 1200.0
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "diameter",
+      "name": "直径",
+      "unit": "mm",
+      "dependencies": [
+        "material",
+        "surface_area",
+        "alloy_shape"
+      ],
+      "type": "query"
+    },
+    "error": "未知查询类型: find_diameter",
+    "timestamp": "2026-01-23T17:03:03.815419"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "power": 10000.0,
+      "voltage": 220.0,
+      "current": 25.0,
+      "temperature": 1200.0
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "diameter",
+      "name": "直径",
+      "unit": "mm",
+      "dependencies": [
+        "material",
+        "surface_area",
+        "alloy_shape"
+      ],
+      "type": "query"
+    },
+    "error": "未知查询类型: find_diameter",
+    "timestamp": "2026-01-24T13:37:28.917120"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5"
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "diameter",
+      "name": "直径",
+      "unit": "mm",
+      "dependencies": [
+        "material",
+        "surface_area",
+        "alloy_shape"
+      ],
+      "type": "query"
+    },
+    "error": "未知查询类型: find_diameter",
+    "timestamp": "2026-01-26T16:42:29.518243"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5"
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-26T17:09:41.056449"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5"
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-26T17:11:45.019840"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 14,
+    "timestamp": "2026-01-26T17:17:31.515503"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 14,
+    "timestamp": "2026-01-26T17:37:17.518896"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 14,
+    "timestamp": "2026-01-26T17:38:36.187350"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "temperature": [
+        800,
+        600
+      ],
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.48,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-26T18:06:57.089469"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.48,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T10:39:49.360745"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 600,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.984
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.48,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T10:39:49.393634"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.047,
+        "unit": "无量纲",
+        "source": "database"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 14,
+    "timestamp": "2026-01-27T10:53:39.768621"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.48,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T10:57:01.632889"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 600,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.984
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.48,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T10:57:01.665171"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1000,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.976
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.48,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T10:57:44.620288"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 600,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.984
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.48,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T10:57:44.649197"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1000,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.976,
+      "temperature_coeff": 0.976
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.44448,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.44448,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T11:20:00.863216"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 600,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.984,
+      "temperature_coeff": 0.984
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.45632,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.45632,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T11:20:00.893178"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T11:21:06.203813"
+  },
+  {
+    "type": "calculation",
+    "target": "ct_value",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 0.98,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-27T11:22:05.379199"
+  },
+  {
+    "type": "calculation",
+    "target": "ct_value",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 0.98,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-27T11:30:07.199728"
+  },
+  {
+    "type": "calculation",
+    "target": "ct_value",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 0.98,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-27T11:30:52.484522"
+  },
+  {
+    "type": "calculation",
+    "target": "ct_value",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 0.98,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-27T11:32:22.239775"
+  },
+  {
+    "type": "calculation",
+    "target": "ct_value",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 0.98,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-27T11:38:16.911995"
+  },
+  {
+    "type": "calculation",
+    "target": "weight_per_meter",
+    "input_params": {
+      "material": "HRE",
+      "alloy_shape": "扁带",
+      "diameter": 25,
+      "length": 1,
+      "thickness": 2.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米重量",
+        "type": "query",
+        "result": 3483.438,
+        "unit": "g/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Gm = (π × d² / 4) × ρg",
+        "message": "⚠️ 数据库中未找到 HRE 直径25mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 3483.438,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T11:41:19.057560"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "HRE",
+      "alloy_shape": "扁带",
+      "diameter": 25,
+      "length": 1,
+      "thickness": 2.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 789.90625,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.003017,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 HRE 直径25mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 261818.445476,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 261818.44547563803,
+    "param_pool_size": 13,
+    "timestamp": "2026-01-27T11:41:19.155468"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.0,
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "resistance_per_meter": 0.0283,
+      "weight_per_meter": 364.0
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 251.7024,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 8894.077739,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 8894.077738515904,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-27T11:41:47.588899"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance_per_meter",
+    "input_params": {
+      "material": "0Cr21Al6Nb",
+      "diameter": 0.48,
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "resistance_per_meter": 8.02,
+      "weight_per_meter": 1.28
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 8.02,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T11:42:28.950685"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_meter",
+    "input_params": {
+      "width": 50,
+      "thickness": 10,
+      "alloy_shape": "扁带"
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      },
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      },
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:42:38.863805"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 4.545455,
+        "unit": "A"
+      }
+    ],
+    "result": 4.545454545454546,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T11:43:07.929785"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      }
+    ],
+    "result": 48.4,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T11:43:07.972513"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T11:43:22.459631"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 600,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.984,
+      "temperature_coeff": 0.984
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.45632,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.45632,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T11:43:38.936637"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "Cr20Ni80",
+      "diameter": 2.1,
+      "length": 1,
+      "specific_gravity": 8.4,
+      "resistivity": 1.09
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 65.974619,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.314861,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 Cr20Ni80 直径2.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 209.535695,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 209.53569511625767,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-27T11:43:47.445673"
+  },
+  {
+    "type": "calculation",
+    "target": "length",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220,
+      "diameter": 8,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "resistance_per_meter": 0.0283,
+      "weight_per_meter": 364.0
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "长度",
+        "type": "calculation",
+        "formula": "resistance / (resistance_per_meter * temperature_coeff)",
+        "result": 1710.24735,
+        "unit": "m"
+      }
+    ],
+    "result": 1710.2473498233217,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T11:44:04.252628"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance_per_meter",
+    "input_params": {
+      "material": "0Cr20Al3",
+      "diameter": 2.7,
+      "length": 1,
+      "specific_gravity": 7.35,
+      "resistivity": 1.23
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.214935,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr20Al3 直径2.7mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 0.214935,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T11:44:29.041493"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T11:44:43.875304"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1300,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.443,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T11:44:43.916769"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "surface_load": 1.5,
+      "current": 45.45
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:44:43.981490"
+  },
+  {
+    "type": "calculation",
+    "target": "length",
+    "input_params": {
+      "surface_load": 1.5,
+      "current": 45.45
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      },
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      },
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:44:44.021372"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 14,
+    "timestamp": "2026-01-27T11:44:57.914765"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1000,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.976,
+      "temperature_coeff": 0.976
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:45:11.450299"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "voltage": 220,
+      "temperature": 800,
+      "material": "0Cr21Al6Nb",
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "ct_value": 0.99,
+      "temperature_coeff": 0.99
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:45:21.018640"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T11:45:32.276103"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "temperature": 1300
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:45:32.315791"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "surface_load": 1.5
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      },
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      },
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:45:32.354460"
+  },
+  {
+    "type": "calculation",
+    "target": "length",
+    "input_params": {
+      "surface_load": 1.5
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      },
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      },
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T11:45:32.396916"
+  },
+  {
+    "type": "calculation",
+    "target": "weight_per_meter",
+    "input_params": {
+      "material": "HRE",
+      "alloy_shape": "扁带",
+      "diameter": 25,
+      "length": 1,
+      "thickness": 2.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米重量",
+        "type": "query",
+        "result": 3483.438,
+        "unit": "g/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Gm = (π × d² / 4) × ρg",
+        "message": "⚠️ 数据库中未找到 HRE 直径25mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 3483.438,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T11:54:55.865241"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "HRE",
+      "alloy_shape": "扁带",
+      "diameter": 25,
+      "length": 1,
+      "thickness": 2.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 789.90625,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.003017,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 HRE 直径25mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 261818.445476,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 261818.44547563803,
+    "param_pool_size": 13,
+    "timestamp": "2026-01-27T11:54:55.977964"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 14,
+    "timestamp": "2026-01-27T12:23:49.163538"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1000,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.976,
+      "temperature_coeff": 0.976
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T12:24:00.320224"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "voltage": 220,
+      "temperature": 800,
+      "material": "0Cr21Al6Nb",
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "ct_value": 0.99,
+      "temperature_coeff": 0.99
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T12:24:10.687951"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T12:24:24.028983"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "temperature": 1300
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T12:24:24.052053"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "surface_load": 1.5
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      },
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      },
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T12:24:24.079334"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "surface_load": 1.5,
+      "temperature": 1300
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "thickness",
+        "name": "thickness",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T12:24:24.104758"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "surface_load": 1.5,
+      "temperature": 1300
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "width",
+        "name": "width",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T12:24:24.133749"
+  },
+  {
+    "type": "calculation",
+    "target": "cross_section_area",
+    "input_params": {
+      "material": "HRE",
+      "width": 25,
+      "thickness": 2.5,
+      "alloy_shape": "扁带",
+      "weight_per_meter": 443.8,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "resistance_per_meter": 0.0237
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "cross_section_area",
+        "name": "cross_section_area",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T18:38:46.549637"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 4.545455,
+        "unit": "A"
+      }
+    ],
+    "result": 4.545454545454546,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T18:40:32.380632"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      }
+    ],
+    "result": 48.4,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T18:40:32.775116"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T18:40:50.618881"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 600,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.984,
+      "temperature_coeff": 0.984
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.45632,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.45632,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T18:41:14.632772"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_meter",
+    "input_params": {
+      "material": "Cr20Ni80",
+      "diameter": 2.1,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 8.4,
+      "resistivity": 1.09
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 65.974619,
+        "unit": "cm²/m"
+      }
+    ],
+    "result": 65.9746185,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-27T18:41:27.365494"
+  },
+  {
+    "type": "calculation",
+    "target": "length",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220,
+      "diameter": 8,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "resistance_per_meter": 0.0283,
+      "weight_per_meter": 364.0
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "长度",
+        "type": "calculation",
+        "formula": "resistance / (resistance_per_meter * temperature_coeff)",
+        "result": 1710.24735,
+        "unit": "m"
+      }
+    ],
+    "result": 1710.2473498233217,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T18:41:49.816295"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance_per_meter",
+    "input_params": {
+      "material": "0Cr20Al3",
+      "diameter": 2.7,
+      "specific_gravity": 7.35,
+      "resistivity": 1.23
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.214935,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr20Al3 直径2.7mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 0.214935,
+    "param_pool_size": 9,
+    "timestamp": "2026-01-27T18:42:17.221556"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T18:42:29.968162"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1500,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "thickness",
+        "name": "thickness",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T18:42:30.013850"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1500,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "width",
+        "name": "width",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T18:42:30.053619"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 14,
+    "timestamp": "2026-01-27T18:42:42.755566"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1000,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.976,
+      "temperature_coeff": 0.976
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T18:42:54.656660"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "voltage": 220,
+      "temperature": 800,
+      "material": "0Cr21Al6Nb",
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "ct_value": 0.99,
+      "temperature_coeff": 0.99
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T18:43:07.376210"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 7,
+    "timestamp": "2026-01-27T18:43:19.960749"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "temperature": 1300
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T18:43:20.007441"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.15
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "thickness",
+        "name": "thickness",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T18:43:20.054238"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.15
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "width",
+        "name": "width",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T18:43:20.101548"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T19:59:12.822032"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1300,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.443,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T19:59:12.872149"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.2
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T19:59:12.920991"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.2
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T19:59:12.973560"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T19:59:54.277724"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1300,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.443,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T19:59:54.306052"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.2
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T19:59:54.322754"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.2
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T19:59:54.350699"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T20:01:27.102664"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T20:01:54.645331"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1300,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.443,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T20:01:54.666071"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.25
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T20:01:54.680276"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "surface_load": 150,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.25
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T20:01:54.706050"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T20:06:42.594213"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1300,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.443,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T20:06:42.638817"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "surface_load": 1.5,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.25
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T20:06:42.681655"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "surface_load": 1.5,
+      "current": 45.45,
+      "resistivity_at_temperature": 1.25
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T20:06:42.731107"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "电阻率",
+        "type": "query",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m",
+        "source": "database"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_dimensions",
+        "result": 1.5,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.5,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-27T20:10:03.970903"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "电阻率",
+        "type": "query",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m",
+        "source": "database"
+      },
+      {
+        "step": "合金带宽度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_dimensions",
+        "result": 1.5,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.5,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-27T20:10:04.312118"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_dimensions",
+        "result": 1.5,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.5,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T20:14:30.983178"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "合金带宽度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_dimensions",
+        "result": 1.5,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.5,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T20:14:31.254602"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.5,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.5,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T20:23:32.858287"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.5,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.5,
+    "param_pool_size": 16,
+    "timestamp": "2026-01-27T20:27:40.472043"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T20:35:59.075079"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 16,
+    "timestamp": "2026-01-27T20:46:51.862297"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.1,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.1,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T20:48:07.940853"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "合金带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "thickness",
+      "name": "合金带厚度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T20:55:44.890529"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "合金带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "width",
+      "name": "合金带宽度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T20:55:44.931886"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "合金带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "thickness",
+      "name": "合金带厚度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T20:57:06.411731"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "合金带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "width",
+      "name": "合金带宽度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T20:57:06.462816"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "thickness",
+      "name": "合金带厚度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T21:01:11.384651"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "width",
+      "name": "合金带宽度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T21:01:11.425040"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "thickness",
+      "name": "合金带厚度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T21:03:23.833929"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "calculation_failed",
+    "failed_step": {
+      "param": "width",
+      "name": "合金带宽度",
+      "unit": "mm",
+      "dependencies": [
+        "current",
+        "resistivity_at_temperature",
+        "surface_load",
+        "aspect_ratio",
+        "material"
+      ],
+      "type": "calculation"
+    },
+    "error": "name 'ratios' is not defined",
+    "timestamp": "2026-01-27T21:03:23.878199"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T21:06:07.401906"
+  },
+  {
+    "type": "calculation",
+    "target": "cross_section_area",
+    "input_params": {
+      "material": "HRE",
+      "width": 25,
+      "thickness": 2.5,
+      "alloy_shape": "扁带",
+      "weight_per_meter": 443.8,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "resistance_per_meter": 0.0237
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "cross_section_area",
+        "name": "cross_section_area",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-01-27T21:11:49.351544"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 4.545455,
+        "unit": "A"
+      }
+    ],
+    "result": 4.545454545454546,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T21:13:12.658895"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      }
+    ],
+    "result": 48.4,
+    "param_pool_size": 8,
+    "timestamp": "2026-01-27T21:13:12.707062"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-27T21:13:24.009533"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_meter",
+    "input_params": {
+      "material": "Cr20Ni80",
+      "diameter": 2.1,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 8.4,
+      "resistivity": 1.09
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 65.974619,
+        "unit": "cm²/m"
+      }
+    ],
+    "result": 65.9746185,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T21:14:05.384447"
+  },
+  {
+    "type": "calculation",
+    "target": "length",
+    "input_params": {
+      "power": 1000,
+      "voltage": 220,
+      "diameter": 8,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "resistance_per_meter": 0.0283,
+      "weight_per_meter": 364.0
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 48.4,
+        "unit": "Ω"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "长度",
+        "type": "calculation",
+        "formula": "resistance / (resistance_per_meter * temperature_coeff)",
+        "result": 1710.24735,
+        "unit": "m"
+      }
+    ],
+    "result": 1710.2473498233217,
+    "param_pool_size": 16,
+    "timestamp": "2026-01-27T21:14:24.215526"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance_per_meter",
+    "input_params": {
+      "material": "0Cr20Al3",
+      "diameter": 2.7,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.35,
+      "resistivity": 1.23
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.214935,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr20Al3 直径2.7mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 0.214935,
+    "param_pool_size": 10,
+    "timestamp": "2026-01-27T21:15:11.546129"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T21:15:23.119664"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "diameter",
+      "name": "直径",
+      "unit": "mm",
+      "dependencies": [
+        "material",
+        "surface_area",
+        "alloy_shape"
+      ],
+      "type": "query"
+    },
+    "error": "未知查询类型: find_diameter",
+    "timestamp": "2026-01-27T21:15:41.867310"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1000,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.976,
+      "temperature_coeff": 0.976
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T21:15:55.847565"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "voltage": 220,
+      "temperature": 800,
+      "material": "0Cr21Al6Nb",
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "ct_value": 0.99,
+      "temperature_coeff": 0.99
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T21:16:07.001441"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带"
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T21:16:17.753981"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带"
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-27T21:16:17.799202"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "diameter",
+      "name": "直径",
+      "unit": "mm",
+      "dependencies": [
+        "material",
+        "surface_area",
+        "alloy_shape"
+      ],
+      "type": "query"
+    },
+    "error": "未知查询类型: find_diameter",
+    "timestamp": "2026-01-27T21:16:57.564906"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T21:24:56.998869"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-27T21:26:28.849569"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-27T21:27:24.710963"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T12:20:38.593413"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T13:06:33.989204"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T13:17:31.157172"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T13:29:09.086885"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T13:35:53.232559"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T13:36:40.387798"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T13:38:49.115130"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T13:39:20.492850"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-29T13:42:48.249746"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T13:54:09.546906"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带"
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T13:57:43.126516"
+  },
+  {
+    "type": "calculation",
+    "target": "width",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带"
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "material",
+        "name": "材料",
+        "unit": "",
+        "type": "known",
+        "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T13:57:43.148707"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T13:58:10.386273"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T14:01:53.971284"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T14:24:55.472096"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T14:26:56.446937"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T14:27:49.677942"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T14:29:07.948460"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T14:29:53.387965"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T14:30:17.431606"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T14:30:55.662364"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T14:31:15.694731"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T14:31:40.110718"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-29T14:40:42.163826"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T15:03:46.692858"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T15:47:27.119176"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T15:47:46.736891"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T15:56:53.282973"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T15:57:17.524479"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T15:59:30.662102"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T16:02:51.404285"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T16:12:24.638110"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T16:15:10.659372"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T16:17:50.337118"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T16:18:17.129947"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T16:23:04.792423"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T16:27:51.407288"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T16:29:15.042325"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T16:30:11.651957"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T16:30:57.013321"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T19:38:21.438474"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T19:47:12.144209"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T19:48:37.421364"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T19:50:32.053088"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-29T20:38:01.631101"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-29T20:38:34.001254"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-29T20:39:00.597759"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-30T10:52:19.280753"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-01-30T10:55:32.053782"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-30T11:01:37.115647"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 12,
+    "timestamp": "2026-01-30T11:02:28.287055"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-01-30T12:46:07.249653"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-30T12:49:05.327753"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-30T16:06:44.984743"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-01-30T16:07:31.207591"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝"
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "temperature_coeff",
+      "name": "温度系数",
+      "unit": "无量纲",
+      "dependencies": [
+        "material",
+        "temperature"
+      ],
+      "type": "query"
+    },
+    "error": "查询失败: (pymysql.err.OperationalError) (2003, \"Can't connect to MySQL server on 'bistu@10.199.195.21' ([Errno 11003] getaddrinfo failed)\")\n(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "timestamp": "2026-03-15T13:16:55.801448"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-03-15T13:22:24.244754"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-03-15T13:26:27.993098"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-03-15T15:57:43.079757"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-03-18T19:53:31.646402"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-03-18T19:56:57.162242"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-03-18T19:57:43.217952"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-03-19T10:16:07.364644"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-03-19T10:16:54.966146"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-02T20:42:07.326105"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-04T16:03:53.199733"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T13:01:32.558060"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T13:15:41.653128"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T13:51:12.851395"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T13:51:31.322562"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {},
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      },
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-04-17T13:57:01.101785"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:01:10.367550"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:03:27.003544"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:04:05.855155"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:05:03.062358"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:06:43.736545"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:07:23.953598"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:14:58.832586"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:16:38.012745"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:19:51.077925"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:29:38.236627"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:33:12.246569"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:40:58.982305"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:41:22.275086"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:41:50.232769"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:50:13.593103"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:51:04.279203"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:55:27.560928"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:55:56.328604"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 4.84,
+        "unit": "Ω"
+      }
+    ],
+    "result": 4.84,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:55:56.350113"
+  },
+  {
+    "type": "calculation",
+    "target": "current",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      }
+    ],
+    "result": 45.45454545454545,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:56:59.274328"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电阻",
+        "type": "calculation",
+        "formula": "voltage ** 2 / power",
+        "result": 4.84,
+        "unit": "Ω"
+      }
+    ],
+    "result": 4.84,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T14:56:59.318969"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 0,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "power",
+        "name": "功率",
+        "unit": "W",
+        "type": "known",
+        "description": "电热元件的额定功率（用户提供的已知条件）"
+      },
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-04-17T15:24:13.236751"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 16,
+    "timestamp": "2026-04-17T15:24:50.817181"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 900,
+      "voltage": 220,
+      "temperature": 800,
+      "surface_load": 3.5,
+      "material": "Cr20Ni80",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 8.4,
+      "resistivity": 1.09,
+      "ct_value": 1.008,
+      "temperature_coeff": 1.008
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 4.090909,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 4.819835,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 0.6,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 0.6,
+    "param_pool_size": 15,
+    "timestamp": "2026-04-17T15:25:29.811999"
+  },
+  {
+    "type": "calculation",
+    "target": "weight_per_meter",
+    "input_params": {
+      "material": "HRE",
+      "diameter": 40,
+      "length": 2000,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米重量",
+        "type": "query",
+        "result": 8917.6,
+        "unit": "g/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Gm = (π × d² / 4) × ρg",
+        "message": "⚠️ 数据库中未找到 HRE 直径40mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 8917.6,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T15:26:22.443113"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-17T17:03:13.324091"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-19T00:46:39.923115"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-19T01:03:47.099425"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-04-19T01:04:35.259199"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_area_per_ohm",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "diameter": 8.1,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米表面积",
+        "type": "calculation",
+        "formula": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+        "result": 254.855039,
+        "unit": "cm²/m"
+      },
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.027571,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 直径8.1mm 的规格数据，已使用公式计算"
+      },
+      {
+        "step": "每欧表面积",
+        "type": "calculation",
+        "formula": "surface_area_per_meter / resistance_per_meter",
+        "result": 9243.590675,
+        "unit": "cm²/Ω"
+      }
+    ],
+    "result": 9243.590674984585,
+    "param_pool_size": 12,
+    "timestamp": "2026-04-19T01:05:57.148981"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "voltage",
+        "name": "电压",
+        "unit": "V",
+        "type": "known",
+        "description": "电热元件的工作电压（用户提供的已知条件）"
+      }
+    ],
+    "timestamp": "2026-04-19T01:06:53.884321"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 16,
+    "timestamp": "2026-04-19T01:07:45.506418"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-19T17:40:11.575939"
+  },
+  {
+    "type": "calculation",
+    "target": "resistance_per_meter",
+    "input_params": {
+      "material": "HRE",
+      "diameter": 4.9,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米电阻",
+        "type": "query",
+        "result": 0.078524,
+        "unit": "Ω/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Rm = ρ × 4 / (π × d²)",
+        "message": "⚠️ 数据库中未找到 HRE 直径4.9mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 0.078524,
+    "param_pool_size": 10,
+    "timestamp": "2026-04-19T18:11:44.918664"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝"
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "temperature_coeff",
+      "name": "温度系数",
+      "unit": "无量纲",
+      "dependencies": [
+        "material",
+        "temperature"
+      ],
+      "type": "query"
+    },
+    "error": "查询失败: I/O operation on closed file.",
+    "timestamp": "2026-04-19T22:11:04.000241"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-20T10:33:54.129210"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-04-20T10:34:48.035230"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 320,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 31.25,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 1022.460937,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 3.8,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 3.8,
+    "param_pool_size": 15,
+    "timestamp": "2026-04-20T10:35:19.401586"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-20T12:18:11.547874"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-20T12:22:28.208270"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 900,
+      "voltage": 220,
+      "temperature": 800,
+      "surface_load": 3.5,
+      "material": "Cr20Ni80",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 8.4,
+      "resistivity": 1.09,
+      "ct_value": 1.008,
+      "temperature_coeff": 1.008
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 4.090909,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 4.819835,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 0.6,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 0.6,
+    "param_pool_size": 15,
+    "timestamp": "2026-04-20T12:44:00.885539"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.98,
+      "temperature_coeff": 0.98
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4504,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4504,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-20T12:51:32.161536"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_load",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "temperature": 1000,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.044,
+      "temperature_coeff": 1.044
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.0,
+    "param_pool_size": 10,
+    "timestamp": "2026-04-20T12:58:58.785971"
+  },
+  {
+    "type": "calculation",
+    "target": "weight_per_meter",
+    "input_params": {
+      "material": "HRE",
+      "diameter": 40,
+      "length": 2,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "每米重量",
+        "type": "query",
+        "result": 8917.6,
+        "unit": "g/m",
+        "source": "calculated",
+        "fallback": true,
+        "fallback_reason": "数据库无规格数据",
+        "formula": "Gm = (π × d² / 4) × ρg",
+        "message": "⚠️ 数据库中未找到 HRE 直径40mm 的规格数据，已使用公式计算"
+      }
+    ],
+    "result": 8917.6,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-20T12:58:58.866006"
+  },
+  {
+    "type": "calculation",
+    "target": "ct_value",
+    "input_params": {
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "missing_params",
+    "missing_params": [
+      {
+        "param": "ct_value",
+        "name": "ct_value",
+        "unit": "未知",
+        "type": "unknown",
+        "description": "未知参数"
+      }
+    ],
+    "timestamp": "2026-04-20T13:11:18.405174"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 HRE 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.48,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.48,
+    "param_pool_size": 10,
+    "timestamp": "2026-04-20T13:11:18.467796"
+  },
+  {
+    "type": "calculation",
+    "target": "surface_load",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "temperature": 1000,
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.044,
+      "temperature_coeff": 1.044
+    },
+    "status": "success",
+    "calculation_chain": [],
+    "result": 1.0,
+    "param_pool_size": 10,
+    "timestamp": "2026-04-20T13:14:45.320574"
+  },
+  {
+    "type": "calculation",
+    "target": "thickness",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "material": "HRE",
+      "temperature": 1300,
+      "surface_load": 1.5,
+      "alloy_shape": "扁带",
+      "specific_gravity": 7.1,
+      "resistivity": 1.48,
+      "ct_value": 0.975,
+      "temperature_coeff": 0.975
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.443,
+        "unit": "10⁻⁶Ω·m"
+      },
+      {
+        "step": "合金带厚度",
+        "type": "calculation",
+        "formula": "特殊计算: belt_thickness_width",
+        "result": 1.0,
+        "unit": "mm"
+      }
+    ],
+    "result": 1.0,
+    "param_pool_size": 16,
+    "timestamp": "2026-04-20T20:30:55.641259"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity",
+    "input_params": {
+      "material": "HRE1000"
+    },
+    "status": "query_failed",
+    "failed_step": {
+      "param": "resistivity",
+      "name": "电阻率",
+      "unit": "10⁻⁶Ω·m",
+      "dependencies": [
+        "material"
+      ],
+      "type": "query"
+    },
+    "error": "未找到材料 'HRE1000' 的电阻率数据",
+    "timestamp": "2026-04-28T19:49:18.429710"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 1000,
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "ct_value": 1.04,
+      "temperature_coeff": 1.04
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.508,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.508,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-28T19:51:36.771820"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 800,
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "ct_value": 1.03,
+      "temperature_coeff": 1.03
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4935,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4935,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-29T11:26:42.499404"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "HRE",
+      "temperature": 900,
+      "specific_gravity": 7.1,
+      "resistivity": 1.45,
+      "ct_value": 1.03,
+      "temperature_coeff": 1.03
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.4935,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.4935,
+    "param_pool_size": 11,
+    "timestamp": "2026-04-29T11:27:05.250303"
+  },
+  {
+    "type": "calculation",
+    "target": "resistivity_at_temperature",
+    "input_params": {
+      "material": "0Cr25Al5",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "温度系数",
+        "type": "query",
+        "result": 1.0,
+        "unit": "无量纲",
+        "source": "default",
+        "is_default": true,
+        "message": "⚠️ 数据库中未找到 0Cr25Al5 在 20℃ 的温度系数数据，使用默认值1.0"
+      },
+      {
+        "step": "指定温度下的电阻率",
+        "type": "calculation",
+        "formula": "resistivity * temperature_coeff",
+        "result": 1.42,
+        "unit": "10⁻⁶Ω·m"
+      }
+    ],
+    "result": 1.42,
+    "param_pool_size": 10,
+    "timestamp": "2026-04-29T11:53:27.505994"
+  },
+  {
+    "type": "calculation",
+    "target": "diameter",
+    "input_params": {
+      "power": 10000,
+      "voltage": 220,
+      "temperature": 1200,
+      "material": "0Cr25Al5",
+      "alloy_shape": "合金丝",
+      "specific_gravity": 7.25,
+      "resistivity": 1.42,
+      "ct_value": 1.047,
+      "temperature_coeff": 1.047
+    },
+    "status": "success",
+    "calculation_chain": [
+      {
+        "step": "电流",
+        "type": "calculation",
+        "formula": "power / voltage",
+        "result": 45.454545,
+        "unit": "A"
+      },
+      {
+        "step": "单位冷态电阻的表面积",
+        "type": "calculation",
+        "formula": "(current ** 2 * temperature_coeff) / surface_load",
+        "result": 2163.22314,
+        "unit": "cm²/Ω"
+      },
+      {
+        "step": "直径",
+        "type": "query",
+        "result": 5.0,
+        "unit": "mm",
+        "source": "database"
+      }
+    ],
+    "result": 5.0,
+    "param_pool_size": 15,
+    "timestamp": "2026-05-03T11:32:42.564026"
+  }
+]

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 日志</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#007bff;--primary-dark:#0062cc;--accent:#ff6b35;
+--think:#5a9fd4;--think-bg:#eef5fb;--success:#16a34a;--border:#e5e5e5;--bg:#f7f7f8;
+--sidebar-w:280px;--tool:#2a9d8f}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+background:var(--bg);color:#333;height:100vh;overflow:hidden}
+
+.app{display:flex;height:100vh}
+
+/* ===== Sidebar ===== */
+.sidebar{width:var(--sidebar-w);background:#f8fafc;color:#475569;display:flex;
+flex-direction:column;flex-shrink:0;border-right:1px solid #e2e8f0}
+.sidebar-header{height:48px;padding:0 16px;border-bottom:1px solid #e2e8f0;
+display:flex;align-items:center;justify-content:space-between}
+.sidebar-header h2{font-size:17px;color:#333;display:flex;align-items:center;gap:8px}
+.sidebar-header h2 img{width:24px;height:24px}
+.back-link{background:none;border:1px solid var(--border);border-radius:6px;padding:6px 12px;
+cursor:pointer;font-size:13px;color:#666;display:flex;align-items:center;gap:5px;
+text-decoration:none;transition:all .15s}
+.back-link:hover{background:#f5f5f5;color:#333}
+.back-link img{width:16px;height:16px}
+
+.log-list{flex:1;overflow-y:auto;padding:8px}
+.log-item{padding:10px 14px;border-radius:6px;cursor:pointer;font-size:13px;
+margin-bottom:2px;color:#475569;transition:all .15s}
+.log-item:hover{background:#f1f5f9;color:var(--primary)}
+.log-item.active{background:#e6f2ff;color:var(--primary);font-weight:500}
+.log-item .query{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.log-item .meta{font-size:11px;color:#94a3b8;margin-top:4px}
+.log-item.active .meta{color:#94a3b8}
+.log-empty{padding:20px;text-align:center;color:#999;font-size:13px}
+
+.sidebar-page{display:flex;justify-content:center;align-items:center;gap:6px;
+padding:6px 8px;border-top:1px solid #e2e8f0}
+.sidebar-page button{background:none;border:1px solid #e2e8f0;color:#64748b;
+border-radius:4px;padding:4px 10px;cursor:pointer;font-size:13px;transition:all .15s}
+.sidebar-page button:hover{color:var(--primary);border-color:var(--primary)}
+.sidebar-page button:disabled{color:#cbd5e1;border-color:#f1f5f9;cursor:default}
+.sidebar-page span{color:#64748b;font-size:13px}
+
+/* ===== Main ===== */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* Top Bar */
+.topbar{height:48px;padding:0 20px;background:#fff;border-bottom:1px solid var(--border);
+display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar h1{font-size:18px;font-weight:600;color:var(--primary)}
+
+/* Detail Area */
+.detail{flex:1;overflow-y:auto;padding:20px 24px}
+
+/* Basic Info */
+.info-card{background:#fff;border:1px solid var(--border);border-radius:8px;
+padding:16px 20px;margin-bottom:16px}
+.info-card h3{font-size:14px;color:var(--primary);margin-bottom:10px;
+padding-bottom:8px;border-bottom:1px solid var(--border)}
+.info-row{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;margin-bottom:6px}
+.info-row .label{color:#888;min-width:80px}
+.info-row .value{color:#333;flex:1;word-break:break-all}
+
+/* Timeline */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;
+width:2px;background:#e5e5e5}
+.tl-item{position:relative;margin-bottom:12px}
+.tl-item::before{content:'';position:absolute;left:-20px;top:6px;width:10px;height:10px;
+border-radius:50%;border:2px solid var(--border);background:#fff;z-index:1}
+.tl-item.node-start::before{border-color:var(--primary);background:var(--primary)}
+.tl-item.tool-call::before{border-color:var(--tool);background:var(--tool)}
+.tl-item.tool-result::before{border-color:var(--success);background:var(--success)}
+.tl-item.think::before{border-color:var(--think);background:var(--think)}
+.tl-item.output::before{border-color:var(--accent);background:var(--accent)}
+.tl-item.progress::before{border-color:#f59e0b;background:#f59e0b}
+.tl-item.error::before{border-color:#ef4444;background:#ef4444}
+
+.tl-card{background:#fff;border:1px solid var(--border);border-radius:6px;
+overflow:hidden;transition:all .15s}
+.tl-card:hover{border-color:#ccc}
+.tl-header{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:13px;
+cursor:pointer;user-select:none}
+.tl-header .icon{font-size:14px;flex-shrink:0}
+.tl-header .title{font-weight:500;color:#444;flex:1}
+.tl-header .ts{font-size:11px;color:#999}
+.tl-header .arrow{font-size:9px;color:#999;transition:transform .15s}
+.tl-header .arrow.open{transform:rotate(90deg)}
+.tl-body{padding:0 14px 10px;font-size:13px;line-height:1.6;color:#555;display:none}
+.tl-body.show{display:block}
+.tl-body pre{background:#f6f8fa;padding:10px 14px;border-radius:4px;overflow-x:auto;
+white-space:pre-wrap;word-break:break-all;font-size:12px;max-height:400px;overflow-y:auto}
+
+/* Node colors */
+.tl-item.think .tl-header .title{color:var(--think)}
+.tl-item.tool-call .tl-header .title{color:var(--tool)}
+.tl-item.tool-result .tl-header .title{color:var(--success)}
+.tl-item.output .tl-header .title{color:var(--accent)}
+.tl-item.error .tl-header .title{color:#ef4444}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;
+height:100%;color:#999}
+.empty-state .icon{margin-bottom:12px}
+.empty-state .icon img{width:32px;height:32px}
+.empty-state p{font-size:14px}
+
+/* Scrollbar */
+.detail::-webkit-scrollbar,.log-list::-webkit-scrollbar{width:4px}
+.detail::-webkit-scrollbar-thumb,.log-list::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+
+/* Utility */
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+<div class="sidebar-header">
+<h2><img src="static/img/机器人.png"> Agent 日志</h2>
+<a class="back-link" href="/agent/"><img src="static/img/返回.png"> 返回对话</a>
+</div>
+<div class="log-list" id="logList">
+<div class="log-empty">加载中...</div>
+</div>
+<div class="sidebar-page hidden" id="logPager">
+<button onclick="logGoPage(logPage-1)" id="logPrev">‹</button>
+<span id="logPageInfo">1 / 1</span>
+<button onclick="logGoPage(logPage+1)" id="logNext">›</button>
+</div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+<h1>日志详情</h1>
+</header>
+<div class="detail" id="detail">
+<div class="empty-state">
+<div class="icon"><img src="static/img/日志.png"></div>
+<p>选择左侧日志查看详情</p>
+</div>
+</div>
+</main>
+</div>
+
+<script>
+const logList = document.getElementById('logList');
+const detail = document.getElementById('detail');
+let allLogs = [];
+let logPage = 1;
+const LOG_PER_PAGE = 20;
+
+// ===== Load log list =====
+async function loadLogs() {
+    try {
+        const resp = await fetch('/agent/api/agent-logs');
+        const data = await resp.json();
+        allLogs = data.logs || [];
+        logPage = 1;
+        renderLogList();
+    } catch(e) {
+        logList.innerHTML = '<div class="log-empty">加载失败</div>';
+    }
+}
+
+function renderLogList() {
+    if (!allLogs.length) {
+        logList.innerHTML = '<div class="log-empty">暂无日志</div>';
+        document.getElementById('logPager').classList.add('hidden');
+        return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(allLogs.length / LOG_PER_PAGE));
+    if (logPage > totalPages) logPage = totalPages;
+
+    const start = (logPage - 1) * LOG_PER_PAGE;
+    const pageItems = allLogs.slice(start, start + LOG_PER_PAGE);
+
+    logList.innerHTML = pageItems.map(l =>
+        `<div class="log-item" onclick="loadDetail('${escapeAttr(l.workflow_id)}', this)">
+            <div class="query">${escapeHtml(l.user_query || l.workflow_id)}</div>
+            <div class="meta">${l.modified} · ${formatSize(l.file_size)}</div>
+        </div>`
+    ).join('');
+
+    // 分页控件
+    const pager = document.getElementById('logPager');
+    if (totalPages <= 1) {
+        pager.classList.add('hidden');
+    } else {
+        pager.classList.remove('hidden');
+        document.getElementById('logPageInfo').textContent = `${logPage} / ${totalPages}`;
+        document.getElementById('logPrev').disabled = logPage <= 1;
+        document.getElementById('logNext').disabled = logPage >= totalPages;
+    }
+}
+
+function logGoPage(p) {
+    const totalPages = Math.max(1, Math.ceil(allLogs.length / LOG_PER_PAGE));
+    logPage = Math.max(1, Math.min(p, totalPages));
+    renderLogList();
+}
+
+function formatSize(bytes) {
+    if (!bytes) return '0 B';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+}
+
+// ===== Load single log =====
+async function loadDetail(workflowId, el) {
+    // Active state
+    logList.querySelectorAll('.log-item').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    try {
+        const resp = await fetch(`/agent/api/agent-logs/${workflowId}`);
+        const data = await resp.json();
+        const entries = data.entries || [];
+        if (!entries.length) {
+            detail.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>日志为空</p></div>';
+            return;
+        }
+        renderDetail(entries);
+    } catch(e) {
+        detail.innerHTML = '<div class="empty-state"><div class="icon">❌</div><p>加载失败</p></div>';
+    }
+}
+
+function renderDetail(entries) {
+    let html = '';
+
+    // Basic info from start entry
+    const startEntry = entries.find(e => e.type === 'start');
+    const endEntry = entries.filter(e => e.type === 'end').pop();
+    if (startEntry) {
+        html += `<div class="info-card"><h3>基本信息</h3>
+            <div class="info-row"><span class="label">查询</span><span class="value">${escapeHtml(startEntry.user_query || '')}</span></div>
+            <div class="info-row"><span class="label">开始时间</span><span class="value">${escapeHtml((startEntry.ts || '').replace('T', ' '))}</span></div>
+            ${startEntry.minio_paths ? `<div class="info-row"><span class="label">文件</span><span class="value">${startEntry.minio_paths.map(p => escapeHtml(p.split('/').pop())).join(', ')}</span></div>` : ''}
+            ${endEntry ? `<div class="info-row"><span class="label">结束时间</span><span class="value">${escapeHtml((endEntry.ts || "").replace("T", " "))}</span></div>` : ""}
+        </div>`;
+    }
+
+    // Timeline
+    html += '<div class="timeline">';
+    let itemIdx = 0;
+    for (const entry of entries) {
+        if (entry.type === 'start' || entry.type === 'end') continue;
+        html += renderTimelineItem(entry, itemIdx++);
+    }
+    html += '</div>';
+
+    detail.innerHTML = html;
+}
+
+function renderTimelineItem(entry, idx) {
+    const cls = entry.type;
+    const ts = entry.ts || '';
+    let icon = '', title = '', body = '';
+
+    switch (entry.type) {
+        case 'node_start':
+            icon = '⚙️';
+            title = `节点开始: ${entry.node || ''}`;
+            break;
+        case 'node_end':
+            icon = '✅';
+            title = `节点完成: ${entry.node || ''}`;
+            if (entry.summary) {
+                body = '<pre>' + escapeHtml(JSON.stringify(entry.summary, null, 2)) + '</pre>';
+            }
+            break;
+        case 'progress':
+            icon = '📊';
+            title = `${entry.node || ''}: ${entry.message || ''}`;
+            break;
+        case 'think':
+            icon = '🧠';
+            title = `思考过程 (${entry.length || '?'} 字)`;
+            body = `<pre>${escapeHtml(entry.content || '')}</pre>`;
+            break;
+        case 'tool_call':
+            icon = '🛠️';
+            title = `调用工具: ${entry.tool || ''}`;
+            if (entry.args) {
+                body = '<pre>' + escapeHtml(JSON.stringify(entry.args, null, 2)) + '</pre>';
+            }
+            break;
+        case 'tool_result':
+            icon = '📦';
+            title = `工具结果: ${entry.tool || ''}` + (entry.result_length ? ` (${entry.result_length} 字)` : '');
+            body = `<pre>${escapeHtml(entry.result || '')}</pre>`;
+            break;
+        case 'output':
+            icon = '💬';
+            title = `最终输出 (${entry.length || '?'} 字)`;
+            body = `<pre>${escapeHtml(entry.content || '')}</pre>`;
+            break;
+        case 'error':
+            icon = '❌';
+            title = '错误';
+            body = `<pre>${escapeHtml(entry.message || entry.content || '')}</pre>`;
+            break;
+        case 'title':
+            icon = '📌';
+            title = `标题: ${entry.title || ''}`;
+            break;
+        case 'maybe':
+            icon = '💡';
+            title = '推荐问题';
+            if (entry.questions && entry.questions.length) {
+                body = '<pre>' + entry.questions.map(q => `• ${escapeHtml(q)}`).join('\n') + '</pre>';
+            }
+            break;
+        default:
+            icon = '📌';
+            title = entry.type;
+            if (entry.content) body = `<pre>${escapeHtml(entry.content)}</pre>`;
+    }
+
+    const defaultExpandedTypes = ['think', 'output', 'error', 'tool_call', 'tool_result', 'node_end', 'maybe'];
+    const isExpanded = defaultExpandedTypes.includes(entry.type) && body !== '';
+
+    const hasBody = body ? 'has-body' : '';
+    const bodyId = `tb_${idx}`;
+
+    return `<div class="tl-item ${cls}">
+        <div class="tl-card">
+            <div class="tl-header ${hasBody ? 'collapsible' : ''}" ${body ? `onclick="toggleBody('${bodyId}', this)"` : ''}>
+                <span class="icon">${icon}</span>
+                <span class="title">${escapeHtml(title)}</span>
+                <span class="ts">${formatTs(ts)}</span>
+                ${body ? `<span class="arrow${isExpanded ? ' open' : ''}">&#9654;</span>` : ''}
+            </div>
+            ${body ? `<div class="tl-body${isExpanded ? ' show' : ''}" id="${bodyId}">${body}</div>` : ''}
+        </div>
+    </div>`;
+}
+
+function toggleBody(id, header) {
+    const el = document.getElementById(id);
+    const arrow = header.querySelector('.arrow');
+    if (el) el.classList.toggle('show');
+    if (arrow) arrow.classList.toggle('open');
+}
+
+function escapeHtml(t) {
+    if (!t) return '';
+    return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function escapeAttr(t) {
+    return String(t).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+function formatTs(ts) {
+    if (!ts) return '';
+    // ISO 格式 "2024-01-15T10:30:45" → "10:30:45"
+    const parts = ts.split('T');
+    if (parts.length === 2) return parts[1];
+    return ts;
+}
+
+// Init
+loadLogs();
+</script>
+</body>
+</html>

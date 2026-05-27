@@ -1,0 +1,2489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库文档管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ========== 顶部导航栏 ========== */
+        .navbar {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ========== 按钮样式 ========== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #218838;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ========== 主容器：左右分栏 ========== */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        /* ========== 左侧分栏：父块列表 ========== */
+        .left-sidebar {
+            width: 35%;
+            min-width: 350px;
+            max-width: 450px;
+            background: white;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            background: #f8f9fa;
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-stats {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 13px;
+            color: #6c757d;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .filter-tab:hover {
+            color: #007bff;
+        }
+
+        .filter-tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            font-weight: 500;
+        }
+
+        .search-box {
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 35px 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .chunk-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .chunk-list-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .chunk-list-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+        }
+
+        .chunk-list-item.active {
+            background: #e7f3ff;
+            border-color: #007bff;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.2);
+        }
+
+        .chunk-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .chunk-id {
+            font-size: 11px;
+            color: #6c757d;
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .chunk-status {
+            flex-shrink: 0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .chunk-preview {
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 8px;
+        }
+
+        .chunk-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .chunk-char-count {
+            color: #007bff;
+            font-weight: 500;
+        }
+
+        .pagination {
+            padding: 15px 20px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ========== 右侧分栏：详情区 ========== */
+        .right-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            margin: 20px;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
+        }
+
+        .empty-state-icon {
+            font-size: 96px;
+            margin-bottom: 30px;
+            opacity: 0.4;
+        }
+
+        .empty-state-text {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #495057;
+        }
+
+        .empty-state-hint {
+            font-size: 14px;
+            color: #adb5bd;
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        .detail-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== 区块1：顶部信息栏 ========== */
+        .detail-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #dee2e6;
+            background: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .detail-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .parent-sequence {
+            font-size: 20px;
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .parent-status {
+            flex-shrink: 0;
+        }
+
+        .parent-status .status-badge {
+            font-size: 14px;
+            padding: 6px 12px;
+            font-weight: 600;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background: #007bff;
+            color: white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .breadcrumb-separator {
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* ========== 区块2：父块内容区 ========== */
+        .detail-content {
+            padding: 30px;
+            flex-shrink: 0;
+        }
+
+        .content-display {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 200px;
+        }
+
+        .content-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #495057;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .content-edit-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .action-buttons-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .edit-actions-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .content-edit {
+            width: 100%;
+            height: 400px;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.8;
+            font-family: 'Consolas', 'Monaco', monospace;
+            resize: vertical;
+        }
+
+        .content-edit:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        .char-counter {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #6c757d;
+            text-align: right;
+        }
+
+        /* ========== 重构警告 Alert ========== */
+        .reconstruction-alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            color: #856404;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* ========== 区块3：子块折叠面板 ========== */
+        .child-section {
+            border-top: 1px solid #dee2e6;
+            background: #f8f9fa;
+            flex-shrink: 0;
+        }
+
+        .child-header {
+            padding: 15px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+
+        .child-header:hover {
+            background: #e9ecef;
+        }
+
+        .child-header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .child-toggle-icon {
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+
+        .child-toggle-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .child-header-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .child-count-badge {
+            background: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .child-hint {
+            padding: 10px 30px;
+            font-size: 12px;
+            color: #6c757d;
+            font-style: italic;
+            background: #f1f3f5;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .child-content {
+            display: none;
+            padding: 20px 30px;
+            background: #f8f9fa;
+        }
+
+        .child-content.expanded {
+            display: block;
+        }
+
+        .child-chunk-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .child-chunk-card {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 3px solid #adb5bd;
+        }
+
+        .child-chunk-content {
+            background: white;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #dee2e6;
+        }
+
+        .child-chunk-meta {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #adb5bd;
+            display: flex;
+            gap: 15px;
+        }
+
+        /* ========== Toast 通知 ========== */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 300px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+            background: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid #28a745;
+        }
+
+        .toast-error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .toast-warning {
+            border-left: 4px solid #ffc107;
+        }
+
+        .toast-info {
+            border-left: 4px solid #17a2b8;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== Loading 遮罩 ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #495057;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ========== 返回按钮 ========== */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+            transition: color 0.2s;
+        }
+
+        .back-button:hover {
+            color: #0056b3;
+        }
+
+        /* ========== 编辑操作按钮组 ========== */
+        .edit-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* ========== 文档列表容器（初始页面） ========== */
+        .document-list-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            padding: 15px 30px;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toolbar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 6px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #495057;
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .filter-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: auto;
+            padding: 20px 30px;
+        }
+
+        .doc-list-pagination {
+            padding: 15px 30px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            flex-shrink: 0;
+        }
+
+        .doc-pagination-info {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .doc-pagination-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 13px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+            color: #212529;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .divider {
+            color: #adb5bd;
+            margin: 0 8px;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-light {
+            background: rgba(255, 255, 255, 0.3);
+            color: inherit;
+            margin-left: 4px;
+        }
+
+        .badge-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        /* ========== 模态框样式 ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #495057;
+        }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f8f9fa;
+        }
+
+        /* ========== 上传区域 ========== */
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #007bff;
+            background: #e9ecef;
+        }
+
+        .upload-icon,
+        .upload-text,
+        .upload-hint {
+            pointer-events: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #adb5bd;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #495057;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            display: none;
+            pointer-events: none;
+        }
+
+        .selected-file.active {
+            display: block;
+        }
+
+        .file-name {
+            font-size: 13px;
+            color: #212529;
+            word-break: break-all;
+        }
+
+        /* ========== 进度条 ========== */
+        .progress-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-section.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            transition: width 0.3s;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* ========== 隐藏类 ========== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ========== Markdown 渲染样式 ========== */
+        .content-text img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .content-text img:hover {
+            transform: scale(1.02);
+        }
+        .content-text h1, .content-text h2, .content-text h3,
+        .content-text h4, .content-text h5, .content-text h6 {
+            margin: 12px 0 6px;
+            font-weight: 600;
+        }
+        .content-text p { margin: 6px 0; }
+        .content-text table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+        .content-text th, .content-text td { border: 1px solid #dee2e6; padding: 6px 10px; }
+        .content-text th { background: #f8f9fa; font-weight: 600; }
+        .content-text code { background: #f1f3f5; padding: 2px 5px; border-radius: 3px; font-size: 13px; }
+        .content-text pre { background: #f1f3f5; padding: 12px; border-radius: 6px; overflow-x: auto; }
+        .content-text pre code { background: none; padding: 0; }
+        .content-text blockquote { border-left: 3px solid #007bff; padding-left: 12px; color: #6c757d; margin: 8px 0; }
+        .content-text ul, .content-text ol { padding-left: 20px; margin: 6px 0; }
+
+        /* 图片灯箱 */
+        .img-lightbox {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; align-items: center;
+            justify-content: center; z-index: 10000; cursor: zoom-out;
+        }
+        .img-lightbox img { max-width: 95%; max-height: 95%; border-radius: 4px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading 遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">处理中...</div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="navbar">
+        <h1>📚知识库文档管理</h1>
+        <div class="navbar-right">
+            <button class="btn btn-secondary" onclick="backToDocuments()">返回文档列表</button>
+            <button class="btn btn-primary" onclick="location.reload()">🔄 刷新</button>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="main-container" id="mainContainer">
+        <!-- 初始页面：文档列表 -->
+        <div class="document-list-container" id="documentListView">
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <span class="toolbar-title">📄文档列表</span>
+                    <button class="btn btn-sm btn-primary" onclick="openUploadModal()">📤 上传文件</button>
+                </div>
+                <div class="toolbar-right">
+                    <select class="filter-select" id="docFilterSelect" onchange="filterDocuments(this.value)">
+                        <option value="all" id="countAll">全部 (0)</option>
+                        <option value="active" id="countActive">已启用 (0)</option>
+                        <option value="inactive" id="countInactive">已禁用 (0)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="documentsTable">
+                    <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th style="width:180px;">部门/分类</th>
+                            <th>父块</th>
+                            <th>子块</th>
+                            <th>总分块</th>
+                            <th style="width:140px;">上传时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsListBody">
+                        <tr class="loading">
+                            <td colspan="8">
+                                <div style="text-align:center;color:#6c757d;padding:40px;">加载中...</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="doc-list-pagination" id="docListPagination">
+                <span class="doc-pagination-info" id="docPaginationInfo">第 1 页 / 共 1 页</span>
+                <div class="doc-pagination-controls">
+                    <button class="btn btn-sm btn-secondary" id="docPrevPageBtn" onclick="changeDocPage(-1)" disabled>上一页</button>
+                    <button class="btn btn-sm btn-secondary" id="docNextPageBtn" onclick="changeDocPage(1)" disabled>下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主从视图：左右分栏 -->
+        <div class="main-container hidden" id="masterDetailView" style="flex:1;width:100%;">
+            <!-- 左侧分栏：父块列表 -->
+            <div class="left-sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">
+                        父分段
+                        <span class="sidebar-stats" id="parentStats">总计: 0</span>
+                    </div>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all" onclick="filterParentChunks('all')">全部</button>
+                        <button class="filter-tab" data-filter="active" onclick="filterParentChunks('active')">正常</button>
+                        <button class="filter-tab" data-filter="inactive" onclick="filterParentChunks('inactive')">禁用</button>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="searchInput" placeholder="搜索父分段内容..." oninput="searchParentChunks()">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+                <div class="chunk-list" id="parentChunkList">
+                    <!-- 父块列表项将动态生成 -->
+                </div>
+                <div class="pagination">
+                    <span class="pagination-info" id="paginationInfo">第 1 页 / 共 1 页</span>
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm btn-secondary" id="prevPageBtn" onclick="changePage(-1)" disabled>上一页</button>
+                        <button class="btn btn-sm btn-secondary" id="nextPageBtn" onclick="changePage(1)" disabled>下一页</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧分栏：详情区 -->
+            <div class="right-content" id="rightContent">
+                <!-- 空状态 -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-text">请在左侧选择一个父分段</div>
+                    <div class="empty-state-hint">点击左侧列表中的父分段，即可查看详情、编辑内容或管理子块</div>
+                </div>
+
+                <!-- 详情容器 -->
+                <div class="detail-container hidden" id="detailContainer">
+                    <!-- 区块1：顶部信息栏 -->
+                    <div class="detail-header">
+                        <div class="detail-title-row">
+                            <div class="parent-sequence" id="parentSequence">父分段-01</div>
+                            <div class="parent-status" id="parentStatusBadge">
+                                <span class="status-badge status-active">启用</span>
+                            </div>
+                        </div>
+                        <div class="breadcrumb" id="breadcrumbNav">
+                            <!-- 面包屑动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 区块2：父块内容区 -->
+                    <div class="detail-content" id="parentContentSection">
+                        <!-- 显示模式 -->
+                        <div class="content-display" id="contentDisplay">
+                            <div class="content-text" id="contentText"></div>
+                        </div>
+                        <!-- 编辑模式 -->
+                        <div class="content-edit-wrapper hidden" id="contentEdit">
+                            <div class="reconstruction-alert">
+                                修改并保存父块内容后，系统将自动销毁并重新生成该父块名下的所有子块及向量数据。
+                            </div>
+                            <textarea class="content-edit" id="contentEditText" rows="15"></textarea>
+                            <div class="char-counter">
+                                当前字符数：<span id="charCount">0</span> / 3000
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="action-buttons-wrapper" id="actionButtonsWrapper">
+                            <button class="btn btn-sm btn-secondary" onclick="startEditParent()">编辑</button>
+                            <button class="btn btn-sm btn-warning" id="disableBtn" onclick="toggleParentStatus()">禁用</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteParent()">删除</button>
+                        </div>
+                        <div class="edit-actions-wrapper hidden" id="editActionsWrapper">
+                            <button class="btn btn-sm btn-primary" onclick="saveParentContent()">保存</button>
+                            <button class="btn btn-sm btn-secondary" onclick="cancelEdit()">取消</button>
+                        </div>
+                    </div>
+
+                    <!-- 区块3：子块折叠面板 -->
+                    <div class="child-section">
+                        <div class="child-header" onclick="toggleChildPanel()">
+                            <div class="child-header-left">
+                                <span class="child-toggle-icon" id="childToggleIcon">▼</span>
+                                <span class="child-header-title">展开子块</span>
+                                <span class="child-count-badge" id="childCountBadge">共 0 个</span>
+                            </div>
+                        </div>
+                        <div class="child-hint">
+                            💡 系统自动切分的检索子块，不可修改。如需调整请编辑上方父块内容。
+                        </div>
+                        <div class="child-content" id="childContent">
+                            <div class="child-chunk-list" id="childChunkList">
+                                <!-- 子块卡片动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 使用相对路径，自动适应当前页面的协议、主机和端口
+        const API_BASE = '/api/kb';
+        let currentDocId = null;
+        let currentKbId = null;
+        let currentFileName = null;
+        let currentDocIsActive = true;
+        let selectedParentId = null;
+        let allParentChunks = [];
+        let currentRawContent = '';
+        let filteredParentChunks = [];
+        let currentPage = 1;
+        const pageSize = 10;
+        let currentFilter = 'all';
+        let isEditing = false;
+        let selectedFile = null;
+
+        // ========== Toast 通知系统 ==========
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, duration);
+        }
+
+        // ========== Loading 遮罩 ==========
+        function showLoading(text = '处理中...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // ========== 页面初始化 ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDocuments();
+            setupUploadArea();
+        });
+
+        // ========== 文档列表加载 ==========
+        let allDocuments = [];
+        let filteredDocuments = [];
+        let currentDocFilter = 'all';
+        let currentDocPage = 1;
+        const docPageSize = 20;
+
+        async function loadDocuments() {
+            const tbody = document.getElementById('documentsListBody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#6c757d;padding:40px;">加载中...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_BASE}/documents?kb_id=test_kb&include_inactive=true`);
+                if (!response.ok) throw new Error('获取文档列表失败');
+
+                const data = await response.json();
+                allDocuments = data.documents || [];
+                applyDocFilter();
+
+            } catch (error) {
+                console.error('加载文档列表失败:', error);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#dc3545;padding:40px;">加载失败: ${error.message}</td></tr>`;
+                showToast('加载文档列表失败', 'error');
+            }
+        }
+
+        function filterDocuments(filterType) {
+            currentDocFilter = filterType;
+            currentDocPage = 1;
+            applyDocFilter();
+        }
+
+        function changeDocPage(delta) {
+            currentDocPage += delta;
+            applyDocFilter();
+        }
+
+        function applyDocFilter() {
+            const tbody = document.getElementById('documentsListBody');
+
+            // 更新统计数据
+            const allDocs = allDocuments.length;
+            const activeDocs = allDocuments.filter(doc => doc.is_active).length;
+            const inactiveDocs = allDocuments.filter(doc => !doc.is_active).length;
+
+            document.getElementById('countAll').textContent = `全部 (${allDocs})`;
+            document.getElementById('countActive').textContent = `已启用 (${activeDocs})`;
+            document.getElementById('countInactive').textContent = `已禁用 (${inactiveDocs})`;
+
+            if (currentDocFilter === 'active') {
+                filteredDocuments = allDocuments.filter(doc => doc.is_active);
+            } else if (currentDocFilter === 'inactive') {
+                filteredDocuments = allDocuments.filter(doc => !doc.is_active);
+            } else {
+                filteredDocuments = [...allDocuments];
+            }
+
+            // 分页
+            const totalPages = Math.ceil(filteredDocuments.length / docPageSize) || 1;
+            if (currentDocPage > totalPages) currentDocPage = totalPages;
+            const start = (currentDocPage - 1) * docPageSize;
+            const end = start + docPageSize;
+            const pageDocs = filteredDocuments.slice(start, end);
+
+            // 更新分页信息
+            document.getElementById('docPaginationInfo').textContent = `第 ${currentDocPage} 页 / 共 ${totalPages} 页（共 ${filteredDocuments.length} 条）`;
+            document.getElementById('docPrevPageBtn').disabled = currentDocPage <= 1;
+            document.getElementById('docNextPageBtn').disabled = currentDocPage >= totalPages;
+
+            if (pageDocs.length === 0) {
+                const emptyMessage = currentDocFilter === 'all' ? '暂无文档' : `暂无${currentDocFilter === 'active' ? '已启用' : '已禁用'}文档`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#6c757d;padding:40px;">${emptyMessage}</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = pageDocs.map(doc => {
+                const formatTime = (timeStr) => {
+                    if (!timeStr) return '-';
+                    try {
+                        const date = new Date(timeStr);
+                        return date.toLocaleString('zh-CN', {
+                            year: 'numeric', month: '2-digit', day: '2-digit',
+                            hour: '2-digit', minute: '2-digit'
+                        });
+                    } catch {
+                        return timeStr;
+                    }
+                };
+
+                const categoryInfo = [];
+                if (doc.department) categoryInfo.push(`<div style="margin-bottom:2px;"><span style="font-size:11px;color:#6c757d;">部门：</span><span style="font-size:12px;color:#0066cc;font-weight:500;">${doc.department}</span></div>`);
+                if (doc.category_l1) categoryInfo.push(`<div style="margin-bottom:2px;"><span style="font-size:11px;color:#6c757d;">一级：</span><span style="font-size:12px;color:#e65100;font-weight:500;">${doc.category_l1}</span></div>`);
+                if (doc.category_l2) categoryInfo.push(`<div style="margin-bottom:2px;"><span style="font-size:11px;color:#6c757d;">二级：</span><span style="font-size:12px;color:#7b1fa2;font-weight:500;">${doc.category_l2}</span></div>`);
+
+                return `
+                    <tr>
+                        <td>
+                            <div style="font-weight:500">${doc.file_name || '未命名'}</div>
+                            <div style="font-size:11px;color:#6c757d;margin-top:4px;">${doc.doc_id}</div>
+                        </td>
+                        <td>
+                            <div style="font-size:12px;line-height:1.5;">
+                                ${categoryInfo.length > 0 ? categoryInfo.join('') : '<span style="color:#adb5bd;font-size:12px;">未分类</span>'}
+                            </div>
+                        </td>
+                        <td><span class="status-badge status-active">${doc.parent_count || 0}</span></td>
+                        <td><span class="status-badge status-info">${doc.child_count || 0}</span></td>
+                        <td><strong>${doc.chunk_count || 0}</strong></td>
+                        <td>
+                            <div style="font-size:11px;color:#6c757d;">${formatTime(doc.upload_time)}</div>
+                        </td>
+                        <td>
+                            <span class="status-badge ${doc.is_active ? 'status-active' : 'status-inactive'}">
+                                ${doc.is_active ? '启用' : '禁用'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-info" onclick="viewParentChunks('${doc.doc_id}', '${(doc.file_name || '').replace(/'/g, "\\'")}', ${doc.is_active}, '${doc.kb_id || ''}')">
+                                    查看
+                                </button>
+                                <button class="btn btn-sm btn-secondary" onclick="editDocumentInfo('${doc.doc_id}', '${(doc.file_name || '').replace(/'/g, "\\'")}', '${(doc.category_l1 || '').replace(/'/g, "\\'")}', '${(doc.category_l2 || '').replace(/'/g, "\\'")}')">
+                                    编辑
+                                </button>
+                                ${doc.is_active ?
+                                    `<button class="btn btn-sm btn-warning" onclick="disableDocument('${doc.doc_id}')">禁用</button>` :
+                                    `<button class="btn btn-sm btn-success" onclick="restoreDocument('${doc.doc_id}')">恢复</button>`
+                                }
+                                <button class="btn btn-sm btn-danger" onclick="deleteDocument('${doc.doc_id}')">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ========== 进入主从视图 ==========
+        async function viewParentChunks(docId, fileName, isActive, kbId) {
+            currentDocId = docId;
+            currentKbId = kbId || '';
+            currentFileName = fileName;
+            currentDocIsActive = isActive;
+            selectedParentId = null;
+            currentPage = 1;
+            currentFilter = 'all';
+
+            // 切换视图
+            document.getElementById('documentListView').classList.add('hidden');
+            document.getElementById('masterDetailView').classList.remove('hidden');
+
+            // 如果文档被禁用，显示提示
+            if (!isActive) {
+                showToast('文档已被禁用，所有分块均不可用。请先在文档列表中启用文档。', 'warning', 5000);
+            }
+
+            // 加载父块列表
+            await loadParentChunks();
+        }
+
+        async function loadParentChunks() {
+            try {
+                showLoading('加载父块列表...');
+                const response = await fetch(`${API_BASE}/documents/${currentDocId}/chunks?kb_id=${currentKbId}&include_inactive=true`);
+                if (!response.ok) throw new Error('获取父块失败');
+
+                const data = await response.json();
+                allParentChunks = data.chunks || [];
+
+                // 重新应用当前筛选条件
+                if (currentFilter === 'all') {
+                    filteredParentChunks = [...allParentChunks];
+                } else if (currentFilter === 'active') {
+                    filteredParentChunks = allParentChunks.filter(p => p.is_active !== false);
+                } else if (currentFilter === 'inactive') {
+                    filteredParentChunks = allParentChunks.filter(p => p.is_active === false);
+                }
+
+                // 检查当前选中的父块是否还在筛选结果中
+                if (selectedParentId) {
+                    const stillVisible = filteredParentChunks.some(p => p.chunk_id === selectedParentId);
+                    if (!stillVisible) {
+                        // 当前选中的父块不在筛选结果中，清空详情页
+                        selectedParentId = null;
+                        document.getElementById('emptyState').classList.remove('hidden');
+                        document.getElementById('detailContainer').classList.add('hidden');
+                    }
+                }
+
+                hideLoading();
+                renderParentChunkList();
+                updatePagination();
+
+            } catch (error) {
+                hideLoading();
+                console.error('加载父块失败:', error);
+                showToast('加载父块失败: ' + error.message, 'error');
+            }
+        }
+
+        function renderParentChunkList() {
+            const listContainer = document.getElementById('parentChunkList');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageItems = filteredParentChunks.slice(start, end);
+
+            document.getElementById('parentStats').textContent = `总计: ${allParentChunks.length}`;
+
+            if (pageItems.length === 0) {
+                listContainer.innerHTML = '<div style="text-align:center;color:#6c757d;padding:40px;">暂无父分段</div>';
+                return;
+            }
+
+            listContainer.innerHTML = pageItems.map((parent, pageIndex) => {
+                // 计算在原始列表中的索引，生成序号
+                const originalIndex = allParentChunks.findIndex(p => p.chunk_id === parent.chunk_id);
+                const sequenceNumber = String(originalIndex + 1).padStart(2, '0');
+                const sequenceId = `父分段-${sequenceNumber}`;
+
+                const preview = parent.content ? parent.content.substring(0, 150) : '无内容';
+                const isActive = parent.is_active !== false;
+                const safePreview = preview.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+                return `
+                    <div class="chunk-list-item ${selectedParentId === parent.chunk_id ? 'active' : ''}"
+                         onclick="selectParentChunk('${parent.chunk_id}')">
+                        <div class="chunk-item-header">
+                            <span class="chunk-id">${sequenceId}</span>
+                            <div class="chunk-status">
+                                <span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}">
+                                    ${isActive ? '启用' : '禁用'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="chunk-preview">${safePreview}</div>
+                        <div class="chunk-meta">
+                            <span class="chunk-char-count">${parent.chunk_length || 0} 字</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredParentChunks.length / pageSize);
+            document.getElementById('paginationInfo').textContent = `第 ${currentPage} 页 / 共 ${totalPages} 页`;
+            document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+            document.getElementById('nextPageBtn').disabled = currentPage >= totalPages;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderParentChunkList();
+            updatePagination();
+        }
+
+        function filterParentChunks(filter) {
+            currentFilter = filter;
+            currentPage = 1;
+
+            // 更新 Tab 状态
+            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`.filter-tab[data-filter="${filter}"]`).classList.add('active');
+
+            // 过滤数据
+            if (filter === 'all') {
+                filteredParentChunks = [...allParentChunks];
+            } else if (filter === 'active') {
+                filteredParentChunks = allParentChunks.filter(p => p.is_active !== false);
+            } else if (filter === 'inactive') {
+                filteredParentChunks = allParentChunks.filter(p => p.is_active === false);
+            }
+
+            // 检查当前选中的父块是否还在筛选结果中
+            if (selectedParentId) {
+                const stillVisible = filteredParentChunks.some(p => p.chunk_id === selectedParentId);
+                if (!stillVisible) {
+                    // 当前选中的父块不在新筛选结果中，清空详情页
+                    selectedParentId = null;
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    document.getElementById('detailContainer').classList.add('hidden');
+                }
+            }
+
+            renderParentChunkList();
+            updatePagination();
+        }
+
+        function searchParentChunks() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            currentPage = 1;
+
+            if (!searchTerm) {
+                filteredParentChunks = [...allParentChunks];
+            } else {
+                filteredParentChunks = allParentChunks.filter(p =>
+                    (p.content && p.content.toLowerCase().includes(searchTerm)) ||
+                    (p.headers && p.headers.toLowerCase().includes(searchTerm)) ||
+                    (p.chunk_id && p.chunk_id.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            renderParentChunkList();
+            updatePagination();
+        }
+
+        // ========== 选择父块并显示详情 ==========
+        async function selectParentChunk(chunkId) {
+            if (isEditing) {
+                showToast('请先保存或取消当前编辑', 'warning');
+                return;
+            }
+
+            selectedParentId = chunkId;
+            renderParentChunkList(); // 更新高亮状态
+
+            try {
+                showLoading('加载父块详情...');
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}`);
+                if (!response.ok) throw new Error('获取父块详情失败');
+
+                const parent = await response.json();
+                hideLoading();
+
+                renderParentDetail(parent);
+
+            } catch (error) {
+                hideLoading();
+                console.error('加载父块详情失败:', error);
+                showToast('加载父块详情失败: ' + error.message, 'error');
+            }
+        }
+
+        function renderParentDetail(parent) {
+            // 隐藏空状态，显示详情
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('detailContainer').classList.remove('hidden');
+
+            // 计算父分段序号
+            const originalIndex = allParentChunks.findIndex(p => p.chunk_id === parent.chunk_id);
+            const sequenceNumber = String(originalIndex + 1).padStart(2, '0');
+            const sequenceId = `父分段-${sequenceNumber}`;
+
+            // 渲染顶部信息
+            document.getElementById('parentSequence').textContent = sequenceId;
+
+            // 渲染状态徽章
+            const isActive = parent.is_active !== false;
+            document.getElementById('parentStatusBadge').innerHTML =
+                `<span class="status-badge ${isActive ? 'status-active' : 'status-inactive'}">
+                    ${isActive ? '启用' : '禁用'}
+                </span>`;
+
+            // 渲染面包屑
+            renderBreadcrumb(parent.headers);
+
+            // 更新按钮状态
+            updateActionButtons(parent);
+
+            // 渲染内容（Markdown → HTML）
+            const contentEl = document.getElementById('contentText');
+            contentEl.style.whiteSpace = 'normal';
+            const raw = parent.content || '无内容';
+            currentRawContent = raw;
+            try {
+                contentEl.innerHTML = marked.parse(raw);
+                // 点击图片放大
+                contentEl.querySelectorAll('img').forEach(img => {
+                    img.addEventListener('click', () => {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'img-lightbox';
+                        overlay.innerHTML = `<img src="${img.src}" alt="${img.alt || ''}">`;
+                        overlay.addEventListener('click', () => overlay.remove());
+                        document.body.appendChild(overlay);
+                    });
+                });
+            } catch (e) {
+                contentEl.textContent = raw;
+            }
+            document.getElementById('contentDisplay').classList.remove('hidden');
+            document.getElementById('contentEdit').classList.add('hidden');
+            document.getElementById('actionButtonsWrapper').classList.remove('hidden');
+            document.getElementById('editActionsWrapper').classList.add('hidden');
+
+            // 重置子块面板
+            resetChildPanel();
+
+            // 获取子块数量
+            loadChildCount();
+
+            // 更新文档标题
+            const statusIcon = parent.is_active === false ? '🚫' : '✅';
+            document.title = `${statusIcon} ${sequenceId} - ${currentFileName}`;
+        }
+
+        async function loadChildCount() {
+            if (!selectedParentId) return;
+
+            try {
+                // 获取子块数量，不限制 size 以获取真实的 total
+                const response = await fetch(
+                    `${API_BASE}/chunks?kb_id=${currentKbId}&parent_id=${selectedParentId}&chunk_level=2&include_inactive=true`
+                );
+                if (!response.ok) return;
+
+                const data = await response.json();
+                const count = data.total || (data.chunks || []).length || 0;
+                document.getElementById('childCountBadge').textContent = `共 ${count} 个`;
+            } catch (error) {
+                console.error('获取子块数量失败:', error);
+            }
+        }
+
+        function renderBreadcrumb(headers) {
+            const container = document.getElementById('breadcrumbNav');
+
+            if (!headers) {
+                container.innerHTML = '<span class="breadcrumb-item">无标题</span>';
+                return;
+            }
+
+            const parts = headers.split('>').map(h => h.trim()).filter(h => h);
+            container.innerHTML = parts.map((part, index) => {
+                if (index === parts.length - 1) {
+                    return `<span class="breadcrumb-item">${part}</span>`;
+                }
+                return `<span class="breadcrumb-item">${part}</span><span class="breadcrumb-separator">/</span>`;
+            }).join('');
+        }
+
+        function updateActionButtons(parent) {
+            const disableBtn = document.getElementById('disableBtn');
+            const isActive = parent.is_active !== false;
+
+            if (isActive) {
+                disableBtn.textContent = '禁用';
+                disableBtn.className = 'btn btn-sm btn-warning';
+            } else {
+                disableBtn.textContent = '启用';
+                disableBtn.className = 'btn btn-sm btn-success';
+            }
+
+            // 如果文档被禁用，禁用启用按钮
+            if (!currentDocIsActive) {
+                disableBtn.disabled = true;
+                disableBtn.title = '文档已被禁用，请先启用文档';
+                disableBtn.style.opacity = '0.5';
+                disableBtn.style.cursor = 'not-allowed';
+            } else {
+                disableBtn.disabled = false;
+                disableBtn.title = '';
+                disableBtn.style.opacity = '1';
+                disableBtn.style.cursor = 'pointer';
+            }
+        }
+
+        function resetChildPanel() {
+            document.getElementById('childToggleIcon').classList.remove('expanded');
+            document.getElementById('childContent').classList.remove('expanded');
+            document.getElementById('childChunkList').innerHTML = '';
+            document.getElementById('childCountBadge').textContent = '共 0 个';
+        }
+
+        function toggleChildPanel() {
+            const icon = document.getElementById('childToggleIcon');
+            const content = document.getElementById('childContent');
+
+            if (content.classList.contains('expanded')) {
+                // 收起
+                icon.classList.remove('expanded');
+                content.classList.remove('expanded');
+            } else {
+                // 展开 - 每次展开都重新加载子块（确保数据最新）
+                loadChildChunks();
+                icon.classList.add('expanded');
+                content.classList.add('expanded');
+            }
+        }
+
+        async function loadChildChunks() {
+            if (!selectedParentId) return;
+
+            try {
+                showLoading('加载子块...');
+                // 使用 parent_id 和 chunk_level 参数获取子块
+                const response = await fetch(`${API_BASE}/chunks?kb_id=${currentKbId}&parent_id=${selectedParentId}&chunk_level=2&include_inactive=true`);
+                if (!response.ok) throw new Error('获取子块失败');
+
+                const data = await response.json();
+                const children = data.chunks || [];
+
+                hideLoading();
+                document.getElementById('childCountBadge').textContent = `共 ${children.length} 个`;
+
+                const listContainer = document.getElementById('childChunkList');
+                if (children.length === 0) {
+                    listContainer.innerHTML = '<div style="text-align:center;color:#6c757d;padding:20px;">暂无子块</div>';
+                    return;
+                }
+
+                listContainer.innerHTML = children.map((child, index) => {
+                    const sequenceNumber = String(index + 1).padStart(2, '0');
+                    return `
+                        <div class="child-chunk-card">
+                            <div class="child-chunk-meta">
+                                <span>子块-${sequenceNumber}</span>
+                                <span>${child.chunk_length || 0} 字</span>
+                                ${child.is_active === false ? '<span style="color:#dc3545;">已禁用</span>' : '<span style="color:#28a745;">启用</span>'}
+                            </div>
+                            <div class="child-chunk-content"></div>
+                        </div>
+                    `;
+                }).join('');
+                // 使用 textContent 安全设置内容，避免 HTML 标签被渲染
+                const cards = listContainer.querySelectorAll('.child-chunk-card');
+                children.forEach((child, index) => {
+                    if (cards[index]) {
+                        cards[index].querySelector('.child-chunk-content').textContent = child.content || '无内容';
+                    }
+                });
+
+            } catch (error) {
+                hideLoading();
+                console.error('加载子块失败:', error);
+                showToast('加载子块失败: ' + error.message, 'error');
+            }
+        }
+
+        // ========== 编辑操作 ==========
+        function startEditParent() {
+            isEditing = true;
+            const contentText = currentRawContent;
+
+            document.getElementById('contentEditText').value = contentText;
+            document.getElementById('charCount').textContent = contentText.length;
+
+            // 切换显示模式
+            document.getElementById('contentDisplay').classList.add('hidden');
+            document.getElementById('contentEdit').classList.remove('hidden');
+
+            // 切换按钮
+            document.getElementById('actionButtonsWrapper').classList.add('hidden');
+            document.getElementById('editActionsWrapper').classList.remove('hidden');
+        }
+
+        function cancelEdit() {
+            isEditing = false;
+
+            // 切换显示模式
+            document.getElementById('contentDisplay').classList.remove('hidden');
+            document.getElementById('contentEdit').classList.add('hidden');
+
+            // 切换按钮
+            document.getElementById('actionButtonsWrapper').classList.remove('hidden');
+            document.getElementById('editActionsWrapper').classList.add('hidden');
+        }
+
+        async function saveParentContent() {
+            const newContent = document.getElementById('contentEditText').value;
+
+            if (!newContent.trim()) {
+                showToast('内容不能为空', 'warning');
+                return;
+            }
+
+            if (newContent.length > 3000) {
+                showToast('父块内容超过 3000 字符限制', 'error');
+                return;
+            }
+
+            try {
+                showLoading('保存中...');
+                const response = await fetch(`${API_BASE}/chunks/${selectedParentId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: newContent })
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '更新失败');
+                }
+
+                showToast('父块已更新，子块已重构', 'success');
+                isEditing = false;
+
+                // 先刷新列表，再刷新详情（确保数据一致）
+                await loadParentChunks();
+
+                // 检查父块是否还在筛选结果中
+                const stillVisible = filteredParentChunks.some(p => p.chunk_id === selectedParentId);
+                if (stillVisible) {
+                    await selectParentChunk(selectedParentId);
+                    // 如果子块面板已展开，重新加载子块
+                    if (document.getElementById('childContent').classList.contains('expanded')) {
+                        await loadChildChunks();
+                    }
+                } else {
+                    // 父块不在筛选结果中，清空详情页
+                    selectedParentId = null;
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    document.getElementById('detailContainer').classList.add('hidden');
+                }
+
+            } catch (error) {
+                hideLoading();
+                console.error('更新失败:', error);
+                showToast('更新失败: ' + error.message, 'error');
+            }
+        }
+
+        // 字符计数
+        document.getElementById('contentEditText').addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        // ========== 禁用/启用操作 ==========
+        async function toggleParentStatus() {
+            if (!selectedParentId) return;
+
+            const isActive = document.getElementById('disableBtn').textContent.includes('禁用');
+            const endpoint = isActive ? '/disable' : '/enable';
+
+            try {
+                showLoading(isActive ? '禁用中...' : '启用中...');
+                const response = await fetch(`${API_BASE}/chunks/${selectedParentId}${endpoint}`, {
+                    method: 'POST'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '操作失败');
+                }
+
+                showToast(isActive ? '父块及其所有子块已禁用' : '父块及其所有子块已启用', 'success');
+
+                // 先刷新列表
+                await loadParentChunks();
+
+                // 检查当前筛选条件是否还显示该父块
+                const stillVisible = filteredParentChunks.some(p => p.chunk_id === selectedParentId);
+                if (stillVisible) {
+                    // 父块仍然在筛选结果中，刷新详情
+                    await selectParentChunk(selectedParentId);
+                } else {
+                    // 父块不在筛选结果中，清空详情页
+                    selectedParentId = null;
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    document.getElementById('detailContainer').classList.add('hidden');
+                }
+
+            } catch (error) {
+                hideLoading();
+                console.error('操作失败:', error);
+                showToast('操作失败: ' + error.message, 'error');
+            }
+        }
+
+        // ========== 删除操作 ==========
+        async function deleteParent() {
+            if (!selectedParentId) return;
+
+            if (!confirm('确定要删除此父块及其所有子块吗？此操作不可撤销。')) {
+                return;
+            }
+
+            try {
+                showLoading('删除中...');
+                const response = await fetch(`${API_BASE}/chunks/${selectedParentId}?hard=true`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '删除失败');
+                }
+
+                showToast('父块及其所有子块已删除', 'success');
+
+                // 重置选中状态
+                selectedParentId = null;
+                document.getElementById('emptyState').classList.remove('hidden');
+                document.getElementById('detailContainer').classList.add('hidden');
+
+                // 刷新列表
+                await loadParentChunks();
+
+            } catch (error) {
+                hideLoading();
+                console.error('删除失败:', error);
+                showToast('删除失败: ' + error.message, 'error');
+            }
+        }
+
+        // ========== 文档操作函数 ==========
+        async function editDocumentInfo(docId, fileName, categoryL1, categoryL2) {
+            document.getElementById('editDocFileName').value = fileName || '';
+            document.getElementById('editDocCategoryL1').value = categoryL1 || '';
+            document.getElementById('editDocCategoryL2').value = categoryL2 || '';
+            document.getElementById('editDocId').value = docId;
+            document.getElementById('editDocumentModal').classList.add('active');
+        }
+
+        async function saveDocumentInfo() {
+            const docId = document.getElementById('editDocId').value;
+            const fileName = document.getElementById('editDocFileName').value.trim();
+            const categoryL1 = document.getElementById('editDocCategoryL1').value.trim();
+            const categoryL2 = document.getElementById('editDocCategoryL2').value.trim();
+
+            if (!fileName) {
+                showToast('文件名不能为空', 'warning');
+                return;
+            }
+
+            try {
+                showLoading('更新中...');
+                const response = await fetch(`${API_BASE}/documents/${docId}/metadata`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        file_name: fileName,
+                        category_l1: categoryL1 || null,
+                        category_l2: categoryL2 || null
+                    })
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '更新失败');
+                }
+
+                showToast('文档信息已更新', 'success');
+                document.getElementById('editDocumentModal').classList.remove('active');
+                await loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('更新失败:', error);
+                showToast('更新失败: ' + error.message, 'error');
+            }
+        }
+
+        async function disableDocument(docId) {
+            if (!confirm('确定要禁用此文档吗？禁用后文档及其所有分块将不可用。')) {
+                return;
+            }
+
+            try {
+                showLoading('禁用中...');
+                const response = await fetch(`${API_BASE}/documents/${docId}/disable`, {
+                    method: 'POST'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '禁用失败');
+                }
+
+                showToast('文档已禁用', 'success');
+                await loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('禁用失败:', error);
+                showToast('禁用失败: ' + error.message, 'error');
+            }
+        }
+
+        async function restoreDocument(docId) {
+            if (!confirm('确定要启用此文档吗？启用后文档及其所有分块将恢复可用。')) {
+                return;
+            }
+
+            try {
+                showLoading('启用中...');
+                const response = await fetch(`${API_BASE}/documents/${docId}/enable`, {
+                    method: 'POST'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '启用失败');
+                }
+
+                showToast('文档已启用', 'success');
+                await loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('启用失败:', error);
+                showToast('启用失败: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteDocument(docId) {
+            if (!confirm('确定要删除此文档吗？此操作不可撤销，将删除文档及其所有分块数据。')) {
+                return;
+            }
+
+            try {
+                showLoading('删除中...');
+                const response = await fetch(`${API_BASE}/documents/${docId}?hard=true`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '删除失败');
+                }
+
+                showToast('文档已删除', 'success');
+                await loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('删除失败:', error);
+                showToast('删除失败: ' + error.message, 'error');
+            }
+        }
+
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            resetUploadForm();
+        }
+
+        function setupUploadArea() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (e) => {
+                handleFileSelect(e.target.files[0]);
+            });
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                const allowedExts = ['.docx', '.pdf'];
+                if (file && allowedExts.some(ext => file.name.toLowerCase().endsWith(ext))) {
+                    handleFileSelect(file);
+                } else {
+                    showToast('请选择 .docx 或 .pdf 文件', 'warning');
+                }
+            });
+        }
+
+        function handleFileSelect(file) {
+            selectedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('selectedFile').classList.add('active');
+        }
+
+        function resetUploadForm() {
+            selectedFile = null;
+            document.getElementById('selectedFile').classList.remove('active');
+            document.getElementById('department').value = '';
+            document.getElementById('category_l1').value = '';
+            document.getElementById('category_l2').value = '';
+            document.getElementById('uploadProgress').classList.remove('active');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '准备上传...';
+            document.getElementById('uploadBtn').disabled = false;
+        }
+
+        // ========== 文档上传 ==========
+        async function uploadDocument() {
+            if (!selectedFile) {
+                showToast('请先选择文件', 'warning');
+                return;
+            }
+
+            const department = document.getElementById('department').value;
+            const category_l1 = document.getElementById('category_l1').value;
+            const category_l2 = document.getElementById('category_l2').value;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('kb_id', 'test_kb');
+            formData.append('department', department);
+            formData.append('category_l1', category_l1);
+            formData.append('category_l2', category_l2);
+
+            try {
+                updateProgress(10, '上传文件中...');
+                const uploadResponse = await fetch(`${API_BASE}/upload-file`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('文件上传失败');
+                }
+
+                const uploadData = await uploadResponse.json();
+                const minioPath = uploadData.minio_path;
+
+                updateProgress(30, '开始处理文档...');
+
+                const requestBody = {
+                    minio_path: minioPath,
+                    file_name: selectedFile.name,
+                    department: department,
+                    category_l1: category_l1,
+                    category_l2: category_l2
+                };
+
+                const taskResponse = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!taskResponse.ok) {
+                    throw new Error('任务创建失败');
+                }
+
+                const taskData = await taskResponse.json();
+                const taskId = taskData.task_id;
+
+                await pollTaskStatus(taskId);
+
+            } catch (error) {
+                console.error('上传失败:', error);
+                showToast('上传失败: ' + error.message, 'error');
+                updateProgress(0, '上传失败');
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        async function pollTaskStatus(taskId) {
+            const maxAttempts = 120;
+            let attempts = 0;
+
+            const poll = setInterval(async () => {
+                attempts++;
+
+                try {
+                    const response = await fetch(`${API_BASE}/tasks/${taskId}`);
+                    if (!response.ok) {
+                        throw new Error('获取任务状态失败');
+                    }
+
+                    const data = await response.json();
+                    const progress = data.progress || 0;
+                    const status = data.status;
+
+                    if (status === 'SUCCESS') {
+                        clearInterval(poll);
+                        updateProgress(100, '✅ 处理完成！');
+                        showToast('文档上传成功！', 'success');
+                        setTimeout(() => {
+                            closeUploadModal();
+                            loadDocuments();
+                        }, 1000);
+                    } else if (status === 'FAILURE') {
+                        clearInterval(poll);
+                        throw new Error(data.error || '处理失败');
+                    } else if (status === 'PROGRESS') {
+                        updateProgress(progress, data.message || '处理中...');
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(poll);
+                        throw new Error('任务超时');
+                    }
+
+                } catch (error) {
+                    clearInterval(poll);
+                    console.error('轮询任务状态失败:', error);
+                    showToast('处理失败: ' + error.message, 'error');
+                    updateProgress(0, '处理失败');
+                    document.getElementById('uploadBtn').disabled = false;
+                }
+            }, 1000);
+        }
+
+        function updateProgress(percent, message) {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressSection = document.getElementById('uploadProgress');
+
+            progressFill.style.width = percent + '%';
+            progressText.textContent = message;
+            progressSection.classList.add('active');
+
+            if (percent === 100) {
+                document.getElementById('uploadBtn').disabled = true;
+            }
+        }
+
+        // ========== 返回文档列表 ==========
+        function backToDocuments() {
+            document.getElementById('masterDetailView').classList.add('hidden');
+            document.getElementById('documentListView').classList.remove('hidden');
+            currentDocId = null;
+            currentKbId = null;
+            selectedParentId = null;
+            loadDocuments();
+        }
+    </script>
+
+    <!-- 编辑文档信息模态框 -->
+    <div class="modal-overlay" id="editDocumentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑文档信息</h3>
+                <button class="modal-close" onclick="document.getElementById('editDocumentModal').classList.remove('active')">×</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editDocId">
+                <div class="form-group">
+                    <label class="form-label">文件名</label>
+                    <input type="text" class="form-control" id="editDocFileName" placeholder="请输入文件名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">一级分类</label>
+                    <input type="text" class="form-control" id="editDocCategoryL1" placeholder="请输入一级分类">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">二级分类</label>
+                    <input type="text" class="form-control" id="editDocCategoryL2" placeholder="请输入二级分类">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('editDocumentModal').classList.remove('active')">取消</button>
+                <button class="btn btn-primary" onclick="saveDocumentInfo()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传弹窗 -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📤 上传文档</h3>
+                <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 文件选择区域 -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">点击选择文件或拖拽文件到此处</div>
+                    <div class="upload-hint">支持 .docx, .pdf, .md 和 .txt 文件</div>
+                    <input type="file" class="file-input" id="fileInput" accept=".docx,.pdf,.md,.txt">
+                    <div class="selected-file" id="selectedFile">
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                </div>
+
+                <!-- 表单字段 -->
+                <div class="form-group">
+                    <label class="form-label">部门</label>
+                    <input type="text" class="form-control" id="department" placeholder="例如：安全部">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">一级分类</label>
+                    <input type="text" class="form-control" id="category_l1" placeholder="例如：操作规程">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">二级分类</label>
+                    <input type="text" class="form-control" id="category_l2" placeholder="例如：安全生产">
+                </div>
+
+                <!-- 进度条 -->
+                <div class="progress-section" id="uploadProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progressText">准备上传...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUploadModal()">取消</button>
+                <button class="btn btn-primary" id="uploadBtn" onclick="uploadDocument()">开始上传</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

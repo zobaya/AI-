@@ -1,0 +1,42 @@
+# === Backend (Django) ===
+__pycache__/
+*.py[oc]
+*.egg-info/
+build/
+dist/
+backend/.venv
+backend/.env
+backend/media/
+backend/db.sqlite3
+backend/**/*.sql
+
+# === Frontend (React) ===
+frontend/node_modules
+frontend/dist
+
+# === AI Service (FastAPI) ===
+ai-service/.venv
+ai-service/.env
+ai-service/__pycache__
+ai-service/**/__pycache__/
+ai-service/**/logs/
+
+# === IDE / OS ===
+.idea/
+.vscode/
+.agents/
+.qoder/
+.trae/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.python-version
+
+# === Internal Docs ===
+改造计划.md
+详细改造计划.md
+项目实现说明.md
+
+# === Claude Code ===
+.claude/

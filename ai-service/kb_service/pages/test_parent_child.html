@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>父子分块管理工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ========== 顶部导航栏 ========== */
+        .navbar {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ========== 按钮样式 ========== */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ========== 主内容区 ========== */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        /* ========== 文档列表区域 ========== */
+        .content-area {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            padding: 15px 30px;
+            background: white;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toolbar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .toolbar-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-buttons .btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-buttons .btn.active {
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .divider {
+            color: #dee2e6;
+            font-size: 20px;
+            margin: 0 5px;
+        }
+
+        .badge-light {
+            background: rgba(255, 255, 255, 0.3);
+            color: inherit;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ========== 文档表格 ========== */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            padding: 20px 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 13px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+            color: #212529;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ========== 操作按钮组 ========== */
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* ========== 弹窗样式 ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #495057;
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f8f9fa;
+        }
+
+        /* ========== 上传区域 ========== */
+        .upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: #007bff;
+            background: #e9ecef;
+        }
+
+        .upload-icon,
+        .upload-text,
+        .upload-hint {
+            pointer-events: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #adb5bd;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #495057;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            display: none;
+            pointer-events: none;
+        }
+
+        .selected-file.active {
+            display: block;
+        }
+
+        .file-name {
+            font-size: 13px;
+            color: #212529;
+            word-break: break-all;
+        }
+
+        /* ========== 表单样式 ========== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.15s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+            font-family: 'Consolas', 'Monaco', monospace;
+            line-height: 1.6;
+        }
+
+        /* ========== 进度条 ========== */
+        .progress-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-section.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            transition: width 0.3s;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* ========== 分块查看区域 ========== */
+        .chunks-container {
+            display: none;
+            padding: 20px 30px;
+            background: white;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        .chunks-container.active {
+            display: block;
+        }
+
+        .chunks-header {
+            margin-bottom: 20px;
+        }
+
+        .chunks-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .chunk-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        /* ========== 树形分块列表 ========== */
+        .chunk-tree {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .chunk-item {
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .chunk-item:last-child {
+            border-bottom: none;
+        }
+
+        .chunk-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .chunk-header:hover {
+            background: #f8f9fa;
+        }
+
+        .chunk-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #6c757d;
+            transition: transform 0.2s;
+        }
+
+        .chunk-toggle.expanded {
+            transform: rotate(90deg);
+        }
+
+        .chunk-toggle.hidden {
+            visibility: hidden;
+        }
+
+        .chunk-info {
+            flex: 1;
+        }
+
+        .chunk-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #212529;
+            margin-bottom: 4px;
+        }
+
+        .chunk-meta {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .chunk-content {
+            display: none;
+            padding: 15px 15px 15px 50px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .chunk-content.expanded {
+            display: block;
+        }
+
+        .chunk-text {
+            font-size: 13px;
+            color: #495057;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+
+        .chunk-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ========== 子块列表 ========== */
+        .child-chunks-wrapper {
+            border-top: 1px solid #dee2e6;
+            background: #f8f9fa;
+        }
+
+        .child-chunks-toggle {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #007bff;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .child-chunks-toggle:hover {
+            background: #e9ecef;
+        }
+
+        .child-chunks-toggle-icon {
+            transition: transform 0.2s;
+        }
+
+        .child-chunks-toggle-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .child-chunks-hint {
+            padding: 8px 15px;
+            font-size: 11px;
+            color: #6c757d;
+            background: #f1f3f5;
+            border-bottom: 1px solid #dee2e6;
+            font-style: italic;
+        }
+
+        .child-chunks {
+            display: none;
+            padding: 10px 15px;
+            background: #f8f9fa;
+        }
+
+        .child-chunks.expanded {
+            display: block;
+        }
+
+        .child-chunk {
+            background: #e9ecef;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #adb5bd;
+        }
+
+        .child-chunk:last-child {
+            margin-bottom: 0;
+        }
+
+        .child-chunk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .child-chunk-title {
+            font-size: 12px;
+            color: #495057;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .child-chunk-lock-icon {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .child-chunk-content {
+            background: white;
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1.5;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: 1px solid #dee2e6;
+        }
+
+        .child-chunk-meta {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #adb5bd;
+            display: flex;
+            gap: 12px;
+        }
+
+        /* ========== 标签样式 ========== */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .badge-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        /* ========== 面包屑标签 ========== */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .breadcrumb-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            background: #007bff;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .breadcrumb-separator {
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .breadcrumb-item:hover {
+            background: #0056b3;
+        }
+
+        /* ========== UUID 显示 ========== */
+        .uuid-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #6c757d;
+            font-family: 'Consolas', 'Monaco', monospace;
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .uuid-text {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .uuid-copy {
+            cursor: pointer;
+            color: #007bff;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .uuid-copy:hover {
+            color: #0056b3;
+        }
+
+        /* ========== 重构警告 Alert ========== */
+        .reconstruction-alert {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .reconstruction-alert-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .reconstruction-alert-content {
+            flex: 1;
+        }
+
+        .reconstruction-alert-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .reconstruction-alert-text {
+            color: #856404;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* ========== 加载动画 ========== */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ========== 返回按钮 ========== */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+            transition: color 0.2s;
+        }
+
+        .back-button:hover {
+            color: #0056b3;
+        }
+
+        /* ========== Toast 通知 ========== */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 300px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease-out;
+            background: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-success {
+            border-left: 4px solid #28a745;
+        }
+
+        .toast-error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .toast-warning {
+            border-left: 4px solid #ffc107;
+        }
+
+        .toast-info {
+            border-left: 4px solid #17a2b8;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toast-close:hover {
+            color: #495057;
+        }
+
+        /* ========== 提示信息框 ========== */
+        .info-box {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .info-box-info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            color: #0c5460;
+        }
+
+        .info-box-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+
+        .info-box-danger {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+
+        /* ========== Loading 遮罩 ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #495057;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading 遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">处理中...</div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <div class="navbar">
+        <h1>📚 父子分块管理工具</h1>
+        <div class="navbar-right">
+            <button class="btn btn-primary" onclick="openUploadModal()">
+                📤 上传文档
+            </button>
+            <button class="btn btn-secondary" onclick="loadDocuments()">
+                🔄 刷新
+            </button>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <div class="content-area">
+            <!-- 工具栏 -->
+            <div class="toolbar" id="documentToolbar">
+                <div class="toolbar-left">
+                    <span class="toolbar-title">📄 文档列表</span>
+                </div>
+                <div class="toolbar-right">
+                    <div class="filter-buttons">
+                        <button class="btn btn-sm btn-secondary" onclick="filterDocuments('all')" id="filterAll">
+                            全部 <span class="badge badge-light" id="countAll">0</span>
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="filterDocuments('active')" id="filterActive">
+                            已启用 <span class="badge badge-light" id="countActive">0</span>
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="filterDocuments('inactive')"
+                            id="filterInactive">
+                            已禁用 <span class="badge badge-light" id="countInactive">0</span>
+                        </button>
+                    </div>
+                    <span class="divider">|</span>
+                    <span class="badge badge-info" id="totalChunksBadge">总分块: 0</span>
+                </div>
+            </div>
+
+            <!-- 文档列表 -->
+            <div class="table-container" id="documentListView">
+                <table id="documentsTable">
+                    <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th style="width:180px;">部门/分类</th>
+                            <th>父块</th>
+                            <th>子块</th>
+                            <th>总分块</th>
+                            <th style="width:140px;">时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsListBody">
+                        <tr class="loading">
+                            <td colspan="8">
+                                <div class="spinner"></div>
+                                加载中...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分块查看区域 -->
+            <div class="chunks-container" id="chunksView">
+                <div class="chunks-header">
+                    <div class="back-button" onclick="backToDocuments()">
+                        ⬅ 返回文档列表
+                    </div>
+                    <div class="chunks-title" id="chunksTitle">文档分块详情</div>
+                    <div class="chunk-stats" id="chunksStats">
+                        <span>父块: <strong id="parentCount">0</strong></span>
+                        <span>子块: <strong id="childCount">0</strong></span>
+                        <span>总分块: <strong id="totalCount">0</strong></span>
+                    </div>
+                </div>
+                <div class="chunk-tree" id="chunkTree">
+                    <!-- 分块树将动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传弹窗 -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">📤 上传文档</div>
+                <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 文件选择区域 -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">点击选择文件或拖拽文件到此处</div>
+                    <div class="upload-hint">支持 .docx 文件</div>
+                    <input type="file" class="file-input" id="fileInput" accept=".docx">
+                    <div class="selected-file" id="selectedFile">
+                        <div class="file-name" id="fileName"></div>
+                    </div>
+                </div>
+
+                <!-- 表单字段 -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="useV2" checked style="margin-right: 8px;">
+                        使用新架构（Orchestrator）
+                    </label>
+                    <div style="font-size: 11px; color: #6c757d; margin-top: 4px;">
+                        新架构使用分层设计（Parser → Chunker → Enhancer → Vectorizer → Storage）
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">部门</label>
+                    <input type="text" class="form-control" id="department" placeholder="例如：安全部">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">一级分类</label>
+                    <input type="text" class="form-control" id="category_l1" placeholder="例如：操作规程">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">二级分类</label>
+                    <input type="text" class="form-control" id="category_l2" placeholder="例如：安全生产">
+                </div>
+
+                <!-- 进度条 -->
+                <div class="progress-section" id="uploadProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progressText">准备上传...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeUploadModal()">取消</button>
+                <button class="btn btn-primary" id="uploadBtn" onclick="uploadDocument()">开始上传</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑文档信息弹窗 -->
+    <div class="modal-overlay" id="editDocumentInfoModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">📝 编辑文档信息</div>
+                <button class="modal-close" onclick="closeEditDocumentInfoModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box info-box-info">
+                    <strong>💡 提示：</strong>修改后系统将自动同步更新所有关联分块的标签信息。
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">文档 ID</label>
+                    <div id="editDocId" style="font-size:12px;color:#6c757d;font-family:monospace;padding:8px 0;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">文档名称</label>
+                    <input type="text" class="form-control" id="editDocFileName" placeholder="例如：安全生产操作规程.docx">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">一级分类</label>
+                    <input type="text" class="form-control" id="editDocCategoryL1" placeholder="例如：操作规程">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">二级分类</label>
+                    <input type="text" class="form-control" id="editDocCategoryL2" placeholder="例如：安全生产">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditDocumentInfoModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveDocumentInfo()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑分块弹窗 -->
+    <div class="modal-overlay" id="editChunkModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="editChunkTitle">编辑分块</div>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 重构警告 Alert -->
+                <div class="reconstruction-alert" id="reconstructionAlert" style="display:none;">
+                    <div class="reconstruction-alert-icon">⚠️</div>
+                    <div class="reconstruction-alert-content">
+                        <div class="reconstruction-alert-title">重构预警</div>
+                        <div class="reconstruction-alert-text">修改并保存父块内容后，系统将自动销毁并重新生成该父块名下的所有子块及向量数据。</div>
+                    </div>
+                </div>
+
+                <!-- 提示信息 -->
+                <div class="info-box info-box-warning" id="editChunkWarning" style="display:none;">
+                    <strong>⚠️ 注意：</strong><span id="editChunkWarningText"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">分块类型</label>
+                    <div id="editChunkTypeInfo" style="font-size:13px;color:#6c757d;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">内容</label>
+                    <textarea class="form-control" id="editChunkContent" rows="10"></textarea>
+                    <div style="font-size:11px;color:#6c757d;margin-top:5px;">
+                        当前字符数：<span id="editChunkCharCount">0</span> / 3000
+                    </div>
+                </div>
+
+                <div class="info-box info-box-info" id="editChunkInfo" style="display:none;">
+                    <strong>💡 提示：</strong><span id="editChunkInfoText"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+                <button class="btn btn-primary" id="saveChunkBtn" onclick="saveChunk()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="confirmTitle">确认操作</div>
+                <button class="modal-close" onclick="closeConfirmModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="confirmMessage">
+                确认要执行此操作吗？
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">取消</button>
+                <button class="btn btn-success" id="confirmSoftBtn">软删除（推荐）</button>
+                <button class="btn btn-danger" id="confirmHardBtn">硬删除（不可恢复）</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 使用相对路径，自动适应当前页面的协议、主机和端口
+        const API_BASE = '/api/kb';
+        let currentDocId = null;
+        let selectedFile = null;
+        let editingChunkId = null;
+
+        // ========== Toast 通知系统 ==========
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            container.appendChild(toast);
+
+            // 自动移除
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, duration);
+        }
+
+        // ========== Loading 遮罩 ==========
+        function showLoading(text = '处理中...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // ========== 页面加载 ==========
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('filterAll').classList.add('active');
+            loadDocuments();
+            setupUploadArea();
+        });
+
+        // ========== 上传弹窗 ==========
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            resetUploadForm();
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        // ========== 编辑文档信息 ==========
+        let editingDocId = null;
+
+        function editDocumentInfo(docId, fileName, department, categoryL1, categoryL2) {
+            editingDocId = docId;
+            document.getElementById('editDocId').textContent = docId;
+            document.getElementById('editDocFileName').value = fileName || '';
+            document.getElementById('editDocCategoryL1').value = categoryL1 || '';
+            document.getElementById('editDocCategoryL2').value = categoryL2 || '';
+            document.getElementById('editDocumentInfoModal').classList.add('active');
+        }
+
+        function closeEditDocumentInfoModal() {
+            document.getElementById('editDocumentInfoModal').classList.remove('active');
+            editingDocId = null;
+        }
+
+        async function saveDocumentInfo() {
+            const fileName = document.getElementById('editDocFileName').value;
+            const categoryL1 = document.getElementById('editDocCategoryL1').value;
+            const categoryL2 = document.getElementById('editDocCategoryL2').value;
+
+            try {
+                showLoading('保存中...');
+                const response = await fetch(`${API_BASE}/documents/${editingDocId}/metadata`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        file_name: fileName,
+                        category_l1: categoryL1,
+                        category_l2: categoryL2
+                    })
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '更新失败');
+                }
+
+                showToast('文档信息已更新，分块标签同步中...', 'success');
+                closeEditDocumentInfoModal();
+                await loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('更新文档信息失败:', error);
+                showToast('更新失败: ' + error.message, 'error');
+            }
+        }
+
+        function setupUploadArea() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (e) => {
+                handleFileSelect(e.target.files[0]);
+            });
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.docx')) {
+                    handleFileSelect(file);
+                } else {
+                    showToast('请选择 .docx 文件', 'warning');
+                }
+            });
+        }
+
+        function handleFileSelect(file) {
+            selectedFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('selectedFile').classList.add('active');
+        }
+
+        function resetUploadForm() {
+            selectedFile = null;
+            document.getElementById('selectedFile').classList.remove('active');
+            document.getElementById('department').value = '';
+            document.getElementById('category_l1').value = '';
+            document.getElementById('category_l2').value = '';
+            document.getElementById('uploadProgress').classList.remove('active');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '准备上传...';
+            document.getElementById('uploadBtn').disabled = false;
+        }
+
+        // ========== 文档上传 ==========
+        async function uploadDocument() {
+            if (!selectedFile) {
+                showToast('请先选择文件', 'warning');
+                return;
+            }
+
+            const department = document.getElementById('department').value;
+            const category_l1 = document.getElementById('category_l1').value;
+            const category_l2 = document.getElementById('category_l2').value;
+            const useV2 = document.getElementById('useV2').checked;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('kb_id', 'test_kb');
+            formData.append('department', department);
+            formData.append('category_l1', category_l1);
+            formData.append('category_l2', category_l2);
+
+            try {
+                updateProgress(10, '上传文件中...');
+                const uploadResponse = await fetch(`${API_BASE}/upload-file`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('文件上传失败');
+                }
+
+                const uploadData = await uploadResponse.json();
+                const minioPath = uploadData.minio_path;
+
+                updateProgress(30, useV2 ? '开始处理文档（使用新架构）...' : '开始处理文档（使用旧架构）...');
+
+                const requestBody = {
+                    minio_path: minioPath,
+                    file_name: selectedFile.name,
+                    kb_id: 'test_kb',
+                    department: department,
+                    category_l1: category_l1,
+                    category_l2: category_l2,
+                    use_v2: useV2
+                };
+
+                const taskResponse = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!taskResponse.ok) {
+                    throw new Error('任务创建失败');
+                }
+
+                const taskData = await taskResponse.json();
+                const taskId = taskData.task_id;
+
+                await pollTaskStatus(taskId);
+
+            } catch (error) {
+                console.error('上传失败:', error);
+                showToast('上传失败: ' + error.message, 'error');
+                updateProgress(0, '上传失败');
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        async function pollTaskStatus(taskId) {
+            const maxAttempts = 120;
+            let attempts = 0;
+
+            const poll = setInterval(async () => {
+                attempts++;
+
+                try {
+                    const response = await fetch(`${API_BASE}/tasks/${taskId}`);
+                    if (!response.ok) {
+                        throw new Error('获取任务状态失败');
+                    }
+
+                    const data = await response.json();
+                    const progress = data.progress || 0;
+                    const status = data.status;
+
+                    if (status === 'SUCCESS') {
+                        clearInterval(poll);
+                        updateProgress(100, '✅ 处理完成！');
+                        showToast('文档上传成功！', 'success');
+                        setTimeout(() => {
+                            closeUploadModal();
+                            loadDocuments();
+                        }, 1000);
+                    } else if (status === 'FAILURE') {
+                        clearInterval(poll);
+                        throw new Error(data.error || '处理失败');
+                    } else if (status === 'PROGRESS') {
+                        updateProgress(progress, data.message || '处理中...');
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(poll);
+                        throw new Error('任务超时');
+                    }
+
+                } catch (error) {
+                    clearInterval(poll);
+                    console.error('轮询任务状态失败:', error);
+                    showToast('处理失败: ' + error.message, 'error');
+                    updateProgress(0, '处理失败');
+                    document.getElementById('uploadBtn').disabled = false;
+                }
+            }, 1000);
+        }
+
+        function updateProgress(percent, message) {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressSection = document.getElementById('uploadProgress');
+
+            progressFill.style.width = percent + '%';
+            progressText.textContent = message;
+            progressSection.classList.add('active');
+
+            if (percent === 100) {
+                document.getElementById('uploadBtn').disabled = true;
+            }
+        }
+
+        // ========== 文档列表 ==========
+        let allDocuments = [];
+        let currentFilter = 'all';
+
+        async function loadDocuments() {
+            const tbody = document.getElementById('documentsListBody');
+            tbody.innerHTML = '<tr class="loading"><td colspan="8"><div class="spinner"></div>加载中...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_BASE}/documents?kb_id=test_kb&include_inactive=true`);
+                if (!response.ok) {
+                    throw new Error('获取文档列表失败');
+                }
+
+                const data = await response.json();
+                allDocuments = data.documents || [];
+
+                updateStatistics();
+                applyFilter();
+
+            } catch (error) {
+                console.error('加载文档列表失败:', error);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#dc3545;padding:40px;">加载失败: ${error.message}</td></tr>`;
+                showToast('加载文档列表失败', 'error');
+            }
+        }
+
+        function updateStatistics() {
+            const totalCount = allDocuments.length;
+            const activeCount = allDocuments.filter(doc => doc.is_active).length;
+            const inactiveCount = allDocuments.filter(doc => !doc.is_active).length;
+            const totalChunks = allDocuments.reduce((sum, doc) => sum + (doc.chunk_count || 0), 0);
+
+            document.getElementById('countAll').textContent = totalCount;
+            document.getElementById('countActive').textContent = activeCount;
+            document.getElementById('countInactive').textContent = inactiveCount;
+            document.getElementById('totalChunksBadge').textContent = `总分块: ${totalChunks}`;
+        }
+
+        function filterDocuments(filterType) {
+            currentFilter = filterType;
+
+            document.getElementById('filterAll').classList.remove('active');
+            document.getElementById('filterActive').classList.remove('active');
+            document.getElementById('filterInactive').classList.remove('active');
+
+            if (filterType === 'all') {
+                document.getElementById('filterAll').classList.add('active');
+            } else if (filterType === 'active') {
+                document.getElementById('filterActive').classList.add('active');
+            } else if (filterType === 'inactive') {
+                document.getElementById('filterInactive').classList.add('active');
+            }
+
+            if (allDocuments.length > 0) {
+                applyFilter();
+            }
+        }
+
+        function applyFilter() {
+            const tbody = document.getElementById('documentsListBody');
+
+            let filteredDocs = allDocuments;
+            if (currentFilter === 'active') {
+                filteredDocs = allDocuments.filter(doc => doc.is_active);
+            } else if (currentFilter === 'inactive') {
+                filteredDocs = allDocuments.filter(doc => !doc.is_active);
+            }
+
+            if (filteredDocs.length === 0) {
+                const emptyMessage = currentFilter === 'all'
+                    ? '暂无文档'
+                    : (currentFilter === 'active' ? '暂无已启用文档' : '暂无已禁用文档');
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#6c757d;padding:40px;">${emptyMessage}</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filteredDocs.map(doc => {
+                const formatTime = (timeStr) => {
+                    if (!timeStr) return '-';
+                    try {
+                        const date = new Date(timeStr);
+                        return date.toLocaleString('zh-CN', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    } catch {
+                        return timeStr;
+                    }
+                };
+
+                const categoryInfo = [];
+                if (doc.department) {
+                    categoryInfo.push(`<div style="margin-bottom:2px;"><span style="font-size:11px;color:#6c757d;">部门：</span><span style="font-size:12px;color:#0066cc;font-weight:500;">${doc.department}</span></div>`);
+                }
+                if (doc.category_l1) {
+                    categoryInfo.push(`<div style="margin-bottom:2px;"><span style="font-size:11px;color:#6c757d;">一级：</span><span style="font-size:12px;color:#e65100;font-weight:500;">${doc.category_l1}</span></div>`);
+                }
+                if (doc.category_l2) {
+                    categoryInfo.push(`<div style="margin-bottom:2px;"><span style="font-size:11px;color:#6c757d;">二级：</span><span style="font-size:12px;color:#7b1fa2;font-weight:500;">${doc.category_l2}</span></div>`);
+                }
+
+                return `
+                <tr>
+                    <td>
+                        <div style="font-weight:500">${doc.file_name || '未命名'}</div>
+                        <div style="font-size:11px;color:#6c757d;margin-top:4px;">${doc.doc_id}</div>
+                    </td>
+                    <td>
+                        <div style="font-size:12px;line-height:1.5;">
+                            ${categoryInfo.length > 0 ? categoryInfo.join('') : '<span style="color:#adb5bd;font-size:12px;">未分类</span>'}
+                        </div>
+                    </td>
+                    <td><span class="badge badge-primary">${doc.parent_count || 0}</span></td>
+                    <td><span class="badge badge-info">${doc.child_count || 0}</span></td>
+                    <td><strong>${doc.chunk_count || 0}</strong></td>
+                    <td>
+                        <div style="font-size:11px;color:#6c757d;">
+                            ${doc.upload_time ? formatTime(doc.upload_time) : '-'}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${doc.is_active ? 'status-active' : 'status-inactive'}">
+                            ${doc.is_active ? '启用' : '禁用'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-info" onclick="viewChunks('${doc.doc_id}', '${(doc.file_name || '').replace(/'/g, "\\'")}', ${doc.is_active})">
+                                查看
+                            </button>
+                            <button class="btn btn-sm btn-secondary" onclick="editDocumentInfo('${doc.doc_id}', '${(doc.file_name || '').replace(/'/g, "\\'")}', '${(doc.department || '').replace(/'/g, "\\'")}', '${(doc.category_l1 || '').replace(/'/g, "\\'")}', '${(doc.category_l2 || '').replace(/'/g, "\\'")}')">
+                                编辑信息
+                            </button>
+                            ${doc.is_active ?
+                        `<button class="btn btn-sm btn-warning" onclick="disableDocument('${doc.doc_id}')">禁用</button>` :
+                        `<button class="btn btn-sm btn-success" onclick="restoreDocument('${doc.doc_id}')">恢复</button>`
+                    }
+                            <button class="btn btn-sm btn-danger" onclick="deleteDocument('${doc.doc_id}')">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('');
+        }
+
+        // ========== 查看分块 ==========
+        async function viewChunks(docId, fileName, isActive) {
+            currentDocId = docId;
+
+            document.getElementById('documentListView').style.display = 'none';
+            document.getElementById('documentToolbar').style.display = 'none';
+            document.getElementById('chunksView').classList.add('active');
+
+            const statusIcon = isActive ? '✅' : '🚫';
+            const statusText = isActive ? '启用' : '已禁用';
+            document.getElementById('chunksTitle').textContent = `${statusIcon} ${fileName} (${statusText})`;
+
+            const chunkTree = document.getElementById('chunkTree');
+            chunkTree.innerHTML = '<div class="loading"><div class="spinner"></div>加载中...</div>';
+
+            try {
+                // 使用新的 API：只获取父块（始终包含已禁用的父块）
+                const response = await fetch(`${API_BASE}/documents/${docId}/chunks?kb_id=test_kb&include_inactive=true`);
+                if (!response.ok) {
+                    throw new Error('获取父块失败');
+                }
+
+                const data = await response.json();
+                const parentChunks = data.chunks || [];
+
+                console.log('[viewChunks] Parent chunks:', parentChunks.length);
+
+                // 一次性获取文档的所有子块（使用 chunk_level=2，始终包含已禁用的）
+                let allChildChunks = [];
+                try {
+                    const childResponse = await fetch(`${API_BASE}/chunks?kb_id=test_kb&doc_id=${docId}&chunk_level=2&include_inactive=true`);
+                    if (childResponse.ok) {
+                        const childData = await childResponse.json();
+                        allChildChunks = childData.chunks || [];
+                        console.log('[viewChunks] Child chunks:', allChildChunks.length);
+                    }
+                } catch (error) {
+                    console.error('[viewChunks] Failed to load child chunks:', error);
+                }
+
+                // 将子块按 parent_id 分组
+                const childChunksByParent = {};
+                allChildChunks.forEach(child => {
+                    const parentId = child.parent_id;
+                    if (parentId) {
+                        if (!childChunksByParent[parentId]) {
+                            childChunksByParent[parentId] = [];
+                        }
+                        childChunksByParent[parentId].push(child);
+                    }
+                });
+
+                // 计算总子块数
+                const totalChildCount = allChildChunks.length;
+
+                document.getElementById('parentCount').textContent = parentChunks.length;
+                document.getElementById('childCount').textContent = totalChildCount;
+                document.getElementById('totalCount').textContent = parentChunks.length + totalChildCount;
+
+                if (parentChunks.length === 0) {
+                    chunkTree.innerHTML = '<div style="text-align:center;color:#6c757d;padding:40px;">暂无父块</div>';
+                    return;
+                }
+
+                chunkTree.innerHTML = parentChunks.map(parent => {
+                    // 获取该父块的子块
+                    const children = childChunksByParent[parent.chunk_id] || [];
+
+                    // 处理标题路径 - 转换为面包屑
+                    let breadcrumbHtml = '';
+                    if (parent.headers) {
+                        const headerParts = parent.headers.split('>').map(h => h.trim()).filter(h => h);
+                        breadcrumbHtml = '<div class="breadcrumb">';
+                        headerParts.forEach((part, index) => {
+                            breadcrumbHtml += `<span class="breadcrumb-item">${part}</span>`;
+                            if (index < headerParts.length - 1) {
+                                breadcrumbHtml += '<span class="breadcrumb-separator">➜</span>';
+                            }
+                        });
+                        breadcrumbHtml += '</div>';
+                    }
+
+                    // 截断 UUID 显示
+                    const shortId = parent.chunk_id.length > 20 ? parent.chunk_id.substring(0, 17) + '...' : parent.chunk_id;
+                    const uuidDisplay = `<div class="uuid-display" onclick="copyToClipboard('${parent.chunk_id}')" title="点击复制: ${parent.chunk_id}">
+                        <span class="uuid-text">ID: ${shortId}</span>
+                        <span class="uuid-copy">📋</span>
+                    </div>`;
+
+                    // 子块 HTML
+                    let childChunksHtml = '';
+                    if (children.length > 0) {
+                        const childChunksList = children.map(child => `
+                            <div class="child-chunk">
+                                <div class="child-chunk-header">
+                                    <div class="child-chunk-title">
+                                        <span class="child-chunk-lock-icon">🔒</span>
+                                        <span>${child.headers || '子块 ' + child.chunk_id}</span>
+                                    </div>
+                                </div>
+                                <div class="child-chunk-content" disabled>${child.content || '无内容'}</div>
+                                <div class="child-chunk-meta">
+                                    <span>${child.chunk_length || 0} 字符</span>
+                                    <span>chunk_level=2</span>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        childChunksHtml = `
+                            <div class="child-chunks-wrapper">
+                                <div class="child-chunks-toggle" onclick="toggleChildChunks(this)">
+                                    <span class="child-chunks-toggle-icon">▼</span>
+                                    <span>展开 ${children.length} 个底层子块</span>
+                                </div>
+                                <div class="child-chunks-hint">
+                                    💡 系统自动切分的检索诱饵，不可修改。如需调整请编辑上方父块内容。
+                                </div>
+                                <div class="child-chunks">
+                                    ${childChunksList}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        childChunksHtml = `
+                            <div class="child-chunks-wrapper">
+                                <div class="child-chunks-hint" style="background:#f8f9fa;border-bottom:none;">
+                                    📭 该父块暂无子块
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    return `
+                        <div class="chunk-item">
+                            <div class="chunk-header" onclick="toggleParentChunk(this)">
+                                <span class="chunk-toggle hidden"></span>
+                                <div class="chunk-info">
+                                    ${breadcrumbHtml}
+                                    <div class="chunk-title">
+                                        ${parent.headers && parent.headers.length > 100 ? parent.headers.substring(0, 100) + '...' : (parent.headers || (parent.content ? parent.content.substring(0, 50) + '...' : '无标题'))}
+                                        <span class="badge badge-primary" style="margin-left:8px;">父块</span>
+                                    </div>
+                                    <div class="chunk-meta">
+                                        ${uuidDisplay}
+                                        <span style="margin-left:8px;">${parent.chunk_length || 0} 字符</span>
+                                        ${!parent.is_active ? '<span class="badge badge-warning">已禁用</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chunk-content expanded">
+                                <div class="chunk-text">${parent.content || '无内容'}</div>
+                                <div class="chunk-actions">
+                                    <button class="btn btn-sm btn-secondary" onclick="editChunk('${parent.chunk_id}', true)">✏️ 编辑父块</button>
+                                    ${!parent.is_active ?
+                            `<button class="btn btn-sm btn-success" onclick="enableChunk('${parent.chunk_id}')">✅ 启用</button>` :
+                            `<button class="btn btn-sm btn-warning" onclick="disableChunk('${parent.chunk_id}')">🚫 禁用</button>`
+                        }
+                                    <button class="btn btn-sm btn-danger" onclick="deleteChunk('${parent.chunk_id}', true)">🗑 删除父块</button>
+                                </div>
+                                ${childChunksHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('加载分块失败:', error);
+                chunkTree.innerHTML = `<div style="text-align:center;color:#dc3545;padding:40px;">加载失败: ${error.message}</div>`;
+                showToast('加载分块失败', 'error');
+            }
+        }
+
+        function toggleParentChunk(element) {
+            const content = element.nextElementSibling;
+            content.classList.toggle('expanded');
+        }
+
+        function toggleChildChunks(element) {
+            const toggleIcon = element.querySelector('.child-chunks-toggle-icon');
+            const childChunks = element.nextElementSibling.nextElementSibling;
+
+            toggleIcon.classList.toggle('expanded');
+            childChunks.classList.toggle('expanded');
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('已复制到剪贴板', 'success', 1500);
+            } catch (error) {
+                console.error('复制失败:', error);
+                showToast('复制失败', 'error', 1500);
+            }
+        }
+
+        function backToDocuments() {
+            document.getElementById('chunksView').classList.remove('active');
+            document.getElementById('documentListView').style.display = 'block';
+            document.getElementById('documentToolbar').style.display = 'flex';
+            currentDocId = null;
+        }
+
+        // ========== 编辑分块 ==========
+        async function editChunk(chunkId, isParent) {
+            editingChunkId = chunkId;
+
+            try {
+                showLoading('加载分块数据...');
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}`);
+                if (!response.ok) {
+                    throw new Error('获取分块失败');
+                }
+
+                const chunk = await response.json();
+                hideLoading();
+
+                // 设置弹窗内容
+                document.getElementById('editChunkTitle').textContent = isParent ? '编辑父块' : '编辑子块';
+                document.getElementById('editChunkContent').value = chunk.content || '';
+                updateCharCount();
+
+                // 显示类型信息
+                document.getElementById('editChunkTypeInfo').innerHTML = `
+                    <span class="badge badge-${isParent ? 'primary' : 'info'}">${isParent ? '父块 (chunk_level=1)' : '子块 (chunk_level=2)'}</span>
+                    <span style="margin-left:10px;">ID: ${chunk.chunk_id}</span>
+                `;
+
+                // 显示重构警告、警告/提示
+                const reconstructionAlert = document.getElementById('reconstructionAlert');
+                const warningBox = document.getElementById('editChunkWarning');
+                const infoBox = document.getElementById('editChunkInfo');
+
+                if (isParent) {
+                    // 父块 - 显示重构警告
+                    reconstructionAlert.style.display = 'flex';
+                    warningBox.style.display = 'block';
+                    document.getElementById('editChunkWarningText').innerHTML = ' 编辑父块内容会触发子块连坐重构：所有旧子块将被删除，并根据新内容重新生成子块。';
+                    infoBox.style.display = 'block';
+                    document.getElementById('editChunkInfoText').textContent = ' 父块内容不能超过 3000 字符。';
+                    document.getElementById('editChunkContent').disabled = false;
+                    document.getElementById('saveChunkBtn').disabled = false;
+                } else {
+                    // 子块警告 - 隐藏重构警告
+                    reconstructionAlert.style.display = 'none';
+                    warningBox.style.display = 'block';
+                    document.getElementById('editChunkWarningText').textContent = ' 子块不可修改内容！请修改关联的父块，系统会自动重建子块。';
+                    infoBox.style.display = 'none';
+                    document.getElementById('editChunkContent').disabled = true;
+                    document.getElementById('saveChunkBtn').disabled = true;
+                }
+
+                document.getElementById('editChunkModal').classList.add('active');
+
+            } catch (error) {
+                hideLoading();
+                console.error('加载分块失败:', error);
+                showToast('加载分块失败: ' + error.message, 'error');
+            }
+        }
+
+        function updateCharCount() {
+            const content = document.getElementById('editChunkContent').value;
+            const count = content.length;
+            document.getElementById('editChunkCharCount').textContent = count;
+
+            if (count > 3000) {
+                document.getElementById('editChunkCharCount').style.color = '#dc3545';
+            } else {
+                document.getElementById('editChunkCharCount').style.color = 'inherit';
+            }
+        }
+
+        document.getElementById('editChunkContent').addEventListener('input', updateCharCount);
+
+        function closeEditModal() {
+            document.getElementById('editChunkModal').classList.remove('active');
+            document.getElementById('reconstructionAlert').style.display = 'none';
+            editingChunkId = null;
+            document.getElementById('editChunkContent').disabled = false;
+            document.getElementById('saveChunkBtn').disabled = false;
+        }
+
+        async function saveChunk() {
+            const newContent = document.getElementById('editChunkContent').value;
+
+            if (!newContent.trim()) {
+                showToast('内容不能为空', 'warning');
+                return;
+            }
+
+            if (newContent.length > 3000) {
+                showToast('父块内容超过 3000 字符限制', 'error');
+                return;
+            }
+
+            try {
+                showLoading('保存中...');
+                const response = await fetch(`${API_BASE}/chunks/${editingChunkId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: newContent
+                    })
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '更新失败');
+                }
+
+                const result = await response.json();
+                console.log('[saveChunk] Result:', result);
+
+                closeEditModal();
+
+                if (result.updated_fields && result.updated_fields.includes('rebuilt_children')) {
+                    showToast('父块已更新，子块已重建！', 'success');
+                } else {
+                    showToast('分块已更新', 'success');
+                }
+
+                // 刷新分块列表
+                const currentTitle = document.getElementById('chunksTitle').textContent;
+                const isActive = !currentTitle.includes('🚫');
+                const fileName = currentTitle.replace(/^[✅🚫]\s*/, '').replace(/\s*\(.*\)$/, '');
+                await viewChunks(currentDocId, fileName, isActive);
+
+            } catch (error) {
+                hideLoading();
+                console.error('更新分块失败:', error);
+                showToast('更新失败: ' + error.message, 'error');
+            }
+        }
+
+        // ========== 删除分块 ==========
+        async function deleteChunk(chunkId, isParent) {
+            const title = isParent ? '删除父块' : '删除子块';
+            const message = isParent
+                ? '⚠️ 删除父块将<strong>级联删除</strong>所有子块！此操作不可撤销。'
+                : '⚠️ 子块不可被单独删除，请删除关联的父块。';
+
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').innerHTML = `
+                <div class="info-box info-box-warning" style="margin-bottom:15px;">
+                    ${message}
+                </div>
+                <p style="font-size:13px;color:#495057;">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                        <input type="checkbox" id="confirmDelete" style="width:18px;height:18px;">
+                        <span>我已了解风险，确认删除</span>
+                    </label>
+                </p>
+            `;
+
+            const confirmBtn = document.getElementById('confirmSoftBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+
+            confirmBtn.textContent = '确认删除';
+            confirmBtn.className = 'btn btn-danger';
+            confirmBtn.disabled = true;
+            confirmBtn.style.opacity = '0.5';
+            document.getElementById('confirmHardBtn').style.display = 'none';
+
+            const checkbox = document.getElementById('confirmDelete');
+            checkbox.addEventListener('change', (e) => {
+                confirmBtn.disabled = !e.target.checked;
+                confirmBtn.style.opacity = e.target.checked ? '1' : '0.5';
+            });
+
+            confirmBtn.onclick = async () => {
+                if (!checkbox.checked) {
+                    showToast('请先确认了解风险', 'warning');
+                    return;
+                }
+                modal.classList.remove('active');
+                await performDeleteChunk(chunkId, isParent);
+            };
+
+            cancelBtn.onclick = () => {
+                modal.classList.remove('active');
+            };
+
+            modal.classList.add('active');
+        }
+
+        async function performDeleteChunk(chunkId, isParent) {
+            try {
+                showLoading('删除中...');
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}?hard=true`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '删除失败');
+                }
+
+                const result = await response.json();
+                console.log('[performDeleteChunk] Result:', result);
+
+                if (isParent) {
+                    showToast('父块及其所有子块已删除', 'success');
+                } else {
+                    showToast('分块已删除', 'success');
+                }
+
+                // 刷新分块列表
+                const currentTitle = document.getElementById('chunksTitle').textContent;
+                const isActive = !currentTitle.includes('🚫');
+                const fileName = currentTitle.replace(/^[✅🚫]\s*/, '').replace(/\s*\(.*\)$/, '');
+                await viewChunks(currentDocId, fileName, isActive);
+
+            } catch (error) {
+                hideLoading();
+                console.error('删除分块失败:', error);
+                showToast('删除失败: ' + error.message, 'error');
+            }
+        }
+
+        // ========== 分块启用/禁用 ==========
+        async function disableChunk(chunkId) {
+            try {
+                showLoading('禁用分块中...');
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}/disable`, {
+                    method: 'POST'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '禁用失败');
+                }
+
+                const result = await response.json();
+                console.log('[disableChunk] Result:', result);
+
+                showToast('父块及其所有子块已禁用', 'success');
+
+                // 刷新分块列表
+                const currentTitle = document.getElementById('chunksTitle').textContent;
+                const isActive = !currentTitle.includes('🚫');
+                const fileName = currentTitle.replace(/^[✅🚫]\s*/, '').replace(/\s*\(.*\)$/, '');
+                await viewChunks(currentDocId, fileName, isActive);
+
+            } catch (error) {
+                hideLoading();
+                console.error('禁用分块失败:', error);
+                showToast('禁用失败: ' + error.message, 'error');
+            }
+        }
+
+        async function enableChunk(chunkId) {
+            try {
+                showLoading('启用分块中...');
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}/enable`, {
+                    method: 'POST'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || '启用失败');
+                }
+
+                const result = await response.json();
+                console.log('[enableChunk] Result:', result);
+
+                showToast('父块及其所有子块已启用', 'success');
+
+                // 刷新分块列表
+                const currentTitle = document.getElementById('chunksTitle').textContent;
+                const isActive = !currentTitle.includes('🚫');
+                const fileName = currentTitle.replace(/^[✅🚫]\s*/, '').replace(/\s*\(.*\)$/, '');
+                await viewChunks(currentDocId, fileName, isActive);
+
+            } catch (error) {
+                hideLoading();
+                console.error('启用分块失败:', error);
+                showToast('启用失败: ' + error.message, 'error');
+            }
+        }
+
+        // ========== 文档操作 ==========
+        async function disableDocument(docId) {
+            try {
+                showLoading('禁用文档...');
+                const response = await fetch(`${API_BASE}/documents/${docId}`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    throw new Error('禁用失败');
+                }
+
+                showToast('文档已禁用', 'success');
+                await loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('禁用文档失败:', error);
+                showToast('禁用失败: ' + error.message, 'error');
+            }
+        }
+
+        async function restoreDocument(docId) {
+            try {
+                showLoading('恢复文档...');
+                const response = await fetch(`${API_BASE}/documents/${docId}/restore`, {
+                    method: 'POST'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    throw new Error('恢复失败');
+                }
+
+                showToast('文档已恢复', 'success');
+                loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('恢复文档失败:', error);
+                showToast('恢复失败: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteDocument(docId) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmTitle').textContent = '⚠️ 危险操作';
+            document.getElementById('confirmMessage').innerHTML = `
+                <p style="margin-bottom:15px;font-size:14px;color:#dc3545;"><strong>确定要永久删除此文档吗？</strong></p>
+                <div class="info-box info-box-danger" style="margin-bottom:15px;">
+                    <strong>⚠️ 硬删除警告：</strong>
+                    <p style="font-size:13px;margin:5px 0;">
+                        文档及其所有分块将被<strong>永久删除</strong>，<strong>无法恢复</strong>！
+                    </p>
+                </div>
+                <div class="info-box info-box-warning">
+                    <strong>💡 提示：</strong>
+                    <p style="font-size:13px;margin:5px 0;">
+                        如果只是暂时禁用文档，请使用"禁用"按钮（软删除，可恢复）。
+                    </p>
+                </div>
+                <p style="margin-top:15px;font-size:13px;">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                        <input type="checkbox" id="confirmHardDelete" style="width:18px;height:18px;">
+                        <span>我已了解风险，确认永久删除此文档</span>
+                    </label>
+                </p>
+            `;
+
+            const confirmSoftBtn = document.getElementById('confirmSoftBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+
+            confirmSoftBtn.style.display = 'inline-block';
+            confirmSoftBtn.textContent = '确认永久删除';
+            confirmSoftBtn.className = 'btn btn-danger';
+            confirmSoftBtn.disabled = true;
+            confirmSoftBtn.style.opacity = '0.5';
+            document.getElementById('confirmHardBtn').style.display = 'none';
+
+            const checkbox = document.getElementById('confirmHardDelete');
+            checkbox.addEventListener('change', (e) => {
+                confirmSoftBtn.disabled = !e.target.checked;
+                confirmSoftBtn.style.opacity = e.target.checked ? '1' : '0.5';
+            });
+
+            confirmSoftBtn.onclick = async () => {
+                if (!checkbox.checked) {
+                    showToast('请先确认了解风险', 'warning');
+                    return;
+                }
+                modal.classList.remove('active');
+                await performHardDelete(docId);
+            };
+
+            cancelBtn.onclick = () => {
+                modal.classList.remove('active');
+            };
+
+            modal.classList.add('active');
+        }
+
+        async function performHardDelete(docId) {
+            try {
+                showLoading('删除文档...');
+                const response = await fetch(`${API_BASE}/documents/${docId}?hard=true`, {
+                    method: 'DELETE'
+                });
+
+                hideLoading();
+
+                if (!response.ok) {
+                    throw new Error('删除失败');
+                }
+
+                showToast('文档已永久删除', 'success');
+                await loadDocuments();
+
+            } catch (error) {
+                hideLoading();
+                console.error('删除文档失败:', error);
+                showToast('删除失败: ' + error.message, 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

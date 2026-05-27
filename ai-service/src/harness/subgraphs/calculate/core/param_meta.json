@@ -1,0 +1,200 @@
+{
+  "parameters": {
+    "power": {
+      "name": "功率",
+      "symbol": "P",
+      "unit": "W",
+      "type": "known",
+      "description": "电热元件的额定功率（用户提供的已知条件）"
+    },
+    "voltage": {
+      "name": "电压",
+      "symbol": "U",
+      "unit": "V",
+      "type": "known",
+      "description": "电热元件的工作电压（用户提供的已知条件）"
+    },
+    "material": {
+      "name": "材料",
+      "symbol": "",
+      "unit": "",
+      "type": "known",
+      "description": "合金材料牌号，如Cr20Ni80、0Cr25Al5等（用户提供的已知条件）"
+    },
+    "temperature": {
+      "name": "温度",
+      "symbol": "T",
+      "unit": "℃",
+      "type": "known",
+      "description": "工作温度（用户提供的已知条件）"
+    },
+    "surface_load": {
+      "name": "表面负荷",
+      "symbol": "Ws",
+      "unit": "W/cm²",
+      "type": "known",
+      "description": "单位表面积的功率负荷（用户提供的已知条件，默认1.0）"
+    },
+    "alloy_shape": {
+      "name": "合金形状",
+      "symbol": "",
+      "unit": "",
+      "type": "known",
+      "description": "合金形状类型，可选值：'合金丝'、'扁丝'、'扁带'（用户提供的已知条件，默认合金丝）"
+    },
+    "application_scenario": {
+      "name": "应用场景",
+      "symbol": "",
+      "unit": "",
+      "type": "known",
+      "description": "电热元件的应用场景，如工业炉、电炉等（用户提供的已知条件，默认工业炉）"
+    },
+    "diameter": {
+      "name": "直径",
+      "symbol": "d",
+      "unit": "mm",
+      "type": "target",
+      "description": "合金丝直径（可作为已知条件或待求参数）"
+    },
+    "current": {
+      "name": "电流",
+      "symbol": "I",
+      "unit": "A",
+      "type": "target",
+      "description": "电流（待求参数，通过功率和电压计算）"
+    },
+    "resistance": {
+      "name": "电阻",
+      "symbol": "R",
+      "unit": "Ω",
+      "type": "target",
+      "description": "电阻（待求参数，通过电压和功率计算）"
+    },
+    "temperature_coeff": {
+      "name": "温度系数",
+      "symbol": "Ct",
+      "unit": "无量纲",
+      "type": "target",
+      "description": "温度系数（待求参数，从数据库查询）"
+    },
+    "surface_area": {
+      "name": "单位冷态电阻的表面积",
+      "symbol": "A",
+      "unit": "cm²/Ω",
+      "type": "target",
+      "description": "单位冷态电阻的表面积（待求参数，通过公式计算）"
+    },
+    "resistance_per_meter": {
+      "name": "每米电阻",
+      "symbol": "Rm",
+      "unit": "Ω/m",
+      "type": "target",
+      "description": "每米电阻（待求参数，从数据库查询或计算）"
+    },
+    "weight_per_meter": {
+      "name": "每米重量",
+      "symbol": "Gm",
+      "unit": "g/m",
+      "type": "target",
+      "description": "每米重量（待求参数，从数据库查询或计算）"
+    },
+    "length": {
+      "name": "长度",
+      "symbol": "L",
+      "unit": "m",
+      "type": "target",
+      "description": "合金丝长度（待求参数，通过公式计算）"
+    },
+    "weight": {
+      "name": "重量",
+      "symbol": "G",
+      "unit": "g",
+      "type": "target",
+      "description": "合金丝重量（待求参数，通过公式计算）"
+    },
+    "specific_gravity": {
+      "name": "比重",
+      "symbol": "ρg",
+      "unit": "g/cm³",
+      "type": "target",
+      "description": "材料比重（待求参数，从数据库查询）"
+    },
+    "resistivity": {
+      "name": "电阻率",
+      "symbol": "ρ",
+      "unit": "10⁻⁶Ω·m",
+      "type": "target",
+      "description": "材料电阻率（待求参数，从数据库查询20℃基准值）。如需其他温度下的电阻率，请使用resistivity_at_temperature参数"
+    },
+    "resistivity_at_temperature": {
+      "name": "指定温度下的电阻率",
+      "symbol": "ρ(T)",
+      "unit": "10⁻⁶Ω·m",
+      "type": "target",
+      "description": "指定温度下的电阻率（待求参数，通过公式计算：ρ(T) = ρ₀ × Ct，其中ρ₀是20℃基准电阻率，Ct是温度系数）"
+    },
+    "surface_area_per_meter": {
+      "name": "每米表面积",
+      "symbol": "Am",
+      "unit": "cm²/m",
+      "type": "target",
+      "description": "合金丝每米表面积（待求参数，通过公式计算侧面积+两端面积）"
+    },
+    "surface_area_per_ohm": {
+      "name": "每欧表面积",
+      "symbol": "A/Ω",
+      "unit": "cm²/Ω",
+      "type": "target",
+      "description": "每欧表面积（待求参数，公式：A/Ω = Am / Rm）"
+    },
+    "thickness": {
+      "name": "合金带厚度",
+      "symbol": "t",
+      "unit": "mm",
+      "type": "target",
+      "description": "合金带厚度（待求参数，通过公式计算：t = k_t × [(I² × ρ) / W_s]^(1/3)）"
+    },
+    "width": {
+      "name": "合金带宽度",
+      "symbol": "w",
+      "unit": "mm",
+      "type": "target",
+      "description": "合金带宽度（待求参数，通过公式计算：w = t × 宽厚比）"
+    },
+    "aspect_ratio": {
+      "name": "宽厚比",
+      "symbol": "w/t",
+      "unit": "无量纲",
+      "type": "known",
+      "description": "宽厚比（可作为已知条件或待求参数，默认10，优先尝试：10, 8, 12, 15, 5）"
+    },
+    "ripple_depth": {
+      "name": "波纹深度",
+      "symbol": "H",
+      "unit": "mm",
+      "type": "target",
+      "description": "波纹深度（待求参数，公式：H = 2.5 × b（铁铬铝）或 H = 3.5 × b（镍铬））"
+    },
+    "ripple_pitch": {
+      "name": "波纹节距",
+      "symbol": "S",
+      "unit": "mm",
+      "type": "target",
+      "description": "波纹节距（待求参数，公式：S = 2 × b）"
+    },
+    "curvature_radius": {
+      "name": "曲率半径",
+      "symbol": "r",
+      "unit": "mm",
+      "type": "target",
+      "description": "曲率半径（待求参数，公式：r = 4.5 × t）"
+    },
+    "strip_length": {
+      "name": "合金带长度系数",
+      "symbol": "L",
+      "unit": "无量纲",
+      "type": "target",
+      "description": "合金带长度系数（待求参数，公式：L = [2(H-t) + 0.57·S] / S）"
+    }
+  }
+}

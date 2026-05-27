@@ -1,0 +1,201 @@
+{
+  "calculation_formulas": {
+    "current": {
+      "name": "电流",
+      "symbol": "I",
+      "unit": "A",
+      "expression": "power / voltage",
+      "dependencies": ["power", "voltage"],
+      "description": "根据功率和电压计算电流"
+    },
+    "resistivity_at_temperature": {
+      "name": "指定温度下的电阻率",
+      "symbol": "ρ(T)",
+      "unit": "10⁻⁶Ω·m",
+      "expression": "resistivity * temperature_coeff",
+      "dependencies": ["resistivity", "temperature_coeff"],
+      "description": "计算指定温度下的电阻率，公式：ρ(T) = ρ₀ × Ct"
+    },
+    "resistance": {
+      "name": "电阻",
+      "symbol": "R",
+      "unit": "Ω",
+      "expression": "voltage ** 2 / power",
+      "dependencies": ["voltage", "power"],
+      "description": "根据电压和功率计算电阻"
+    },
+    "surface_area": {
+      "name": "单位冷态电阻的表面积",
+      "symbol": "A",
+      "unit": "cm²/Ω",
+      "expression": "(current ** 2 * temperature_coeff) / surface_load",
+      "dependencies": ["current", "temperature_coeff", "surface_load"],
+      "description": "计算单位冷态电阻的表面积"
+    },
+    "length": {
+      "name": "长度",
+      "symbol": "L",
+      "unit": "m",
+      "expression": "resistance / (resistance_per_meter * temperature_coeff)",
+      "dependencies": ["resistance", "resistance_per_meter", "temperature_coeff"],
+      "description": "计算合金丝长度"
+    },
+    "weight": {
+      "name": "重量",
+      "symbol": "G",
+      "unit": "g",
+      "expression": "length * weight_per_meter",
+      "dependencies": ["length", "weight_per_meter"],
+      "description": "计算合金丝重量"
+    },
+    "surface_area_per_meter": {
+      "name": "每米表面积",
+      "symbol": "Am",
+      "unit": "cm²/m",
+      "expression": "3.14 * (diameter / 10) * 100 + 3.14 * ((diameter / 10) ** 2) / 4",
+      "dependencies": ["diameter"],
+      "description": "计算合金丝每米表面积（侧面积+两端面积），公式：Am = π × d × 100 + π × d² / 4（d单位mm转cm，π取3.14）"
+    },
+    "surface_area_per_ohm": {
+      "name": "每欧表面积",
+      "symbol": "A/Ω",
+      "unit": "cm²/Ω",
+      "expression": "surface_area_per_meter / resistance_per_meter",
+      "dependencies": ["surface_area_per_meter", "resistance_per_meter"],
+      "description": "计算每欧表面积（每米表面积除以每米电阻）"
+    },
+    "cross_section_area": {
+      "name": "截面积",
+      "symbol": "A",
+      "unit": "mm²",
+      "expression": "3.14 * (diameter ** 2) / 4 if diameter else thickness * width",
+      "dependencies": ["diameter", "thickness", "width"],
+      "description": "计算截面积，公式：A = π × d² / 4（合金丝），A = t × w（合金带）"
+    },
+    "thickness": {
+      "name": "合金带厚度",
+      "symbol": "t",
+      "unit": "mm",
+      "expression": "special:belt_thickness_width",
+      "dependencies": ["current", "resistivity_at_temperature", "surface_load", "aspect_ratio", "material"],
+      "description": "计算合金带厚度（会同时计算宽度），公式：t = k_t × [(I² × ρ(T)) / W_s]^(1/3)，w = t × 宽厚比，会尝试多个宽厚比找到标准规格"
+    },
+    "width": {
+      "name": "合金带宽度",
+      "symbol": "w",
+      "unit": "mm",
+      "expression": "special:belt_thickness_width",
+      "dependencies": ["current", "resistivity_at_temperature", "surface_load", "aspect_ratio", "material"],
+      "description": "计算合金带宽度（会同时计算厚度），公式：w = t × 宽厚比，t = k_t × [(I² × ρ(T)) / W_s]^(1/3)，会尝试多个宽厚比找到标准规格"
+    },
+    "ripple_depth": {
+      "name": "波纹深度",
+      "symbol": "H",
+      "unit": "mm",
+      "expression": "special:ripple_depth_by_alloy",
+      "dependencies": ["width", "material"],
+      "description": "计算波纹深度，公式：H = 2.5 × b（铁铬铝）或 H = 3.5 × b（镍铬），根据材料名称判断合金类型"
+    },
+    "ripple_pitch": {
+      "name": "波纹节距",
+      "symbol": "S",
+      "unit": "mm",
+      "expression": "2 * width",
+      "dependencies": ["width"],
+      "description": "计算波纹节距，公式：S = 2 × b"
+    },
+    "curvature_radius": {
+      "name": "曲率半径",
+      "symbol": "r",
+      "unit": "mm",
+      "expression": "4.5 * thickness",
+      "dependencies": ["thickness"],
+      "description": "计算曲率半径，公式：r = 4.5 × t"
+    },
+    "strip_length": {
+      "name": "合金带长度系数",
+      "symbol": "L",
+      "unit": "无量纲",
+      "expression": "(2 * (ripple_depth - thickness) + 0.57 * ripple_pitch) / ripple_pitch",
+      "dependencies": ["ripple_depth", "ripple_pitch", "thickness"],
+      "description": "计算合金带长度系数，公式：L = [2(H-t) + 0.57·S] / S"
+    }
+  },
+  "query_mappings": {
+    "temperature_coeff": {
+      "name": "温度系数",
+      "symbol": "Ct",
+      "unit": "无量纲",
+      "query_type": "temperature_coefficient",
+      "dependencies": ["material", "temperature"],
+      "description": "从数据库查询温度系数"
+    },
+    "diameter": {
+      "name": "直径",
+      "symbol": "d",
+      "unit": "mm",
+      "query_type": "find_diameter",
+      "dependencies": ["material", "surface_area", "alloy_shape"],
+      "description": "根据表面积从数据库查找匹配的直径"
+    },
+    "resistance_per_meter": {
+      "name": "每米电阻",
+      "symbol": "Rm",
+      "unit": "Ω/m",
+      "query_type": "resistance_per_meter",
+      "dependencies": ["material", "diameter", "alloy_shape"],
+      "description": "从数据库查询每米电阻（支持降级计算）"
+    },
+    "weight_per_meter": {
+      "name": "每米重量",
+      "symbol": "Gm",
+      "unit": "g/m",
+      "query_type": "weight_per_meter",
+      "dependencies": ["material", "diameter", "alloy_shape"],
+      "description": "从数据库查询每米重量（支持降级计算）"
+    },
+    "specific_gravity": {
+      "name": "比重",
+      "symbol": "ρg",
+      "unit": "g/cm³",
+      "query_type": "specific_gravity",
+      "dependencies": ["material"],
+      "description": "从数据库查询材料比重"
+    },
+    "resistivity": {
+      "name": "电阻率",
+      "symbol": "ρ",
+      "unit": "10⁻⁶Ω·m",
+      "query_type": "resistivity",
+      "dependencies": ["material"],
+      "description": "从数据库查询材料电阻率（20℃）"
+    }
+  },
+  "default_values": {
+    "surface_load": {
+      "value": 1.0,
+      "unit": "W/cm²",
+      "description": "表面负荷默认值"
+    },
+    "alloy_shape": {
+      "value": "合金丝",
+      "unit": "",
+      "description": "合金形状默认值"
+    },
+    "application_scenario": {
+      "value": "工业炉",
+      "unit": "",
+      "description": "应用场景默认值"
+    },
+    "temperature": {
+      "value": 20,
+      "unit": "℃",
+      "description": "温度默认值（常温）"
+    },
+    "aspect_ratio": {
+      "value": 10,
+      "unit": "无量纲",
+      "description": "宽厚比默认值（优先尝试：10, 8, 12, 15, 5）"
+    }
+  }
+}

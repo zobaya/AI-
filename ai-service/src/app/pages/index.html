@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool Calling Agent</title>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked-katex-extension/lib/index.umd.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#007bff;--primary-dark:#0062cc;--accent:#ff6b35;--accent-dark:#e05a28;
+--think:#5a9fd4;--think-bg:#eef5fb;--success:#16a34a;--border:#e5e5e5;--bg:#f7f7f8;
+--sidebar-w:240px;--tool:#2a9d8f;--rewrite:#6c8ebf;--action:#8a9bb0;--recommend:#d4915a}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+background:var(--bg);color:#333;height:100vh;overflow:hidden;font-size:16px}
+
+/* ===== Layout ===== */
+.app{display:flex;height:100vh}
+
+/* ===== Sidebar ===== */
+/* 1. 侧边栏背景改为浅灰色，字体改为深灰，右侧增加浅色分割线 */
+.sidebar{width:var(--sidebar-w);background:#f8fafc;color:#475569;display:flex;
+flex-direction:column;flex-shrink:0;transition:width .2s;border-right:1px solid #e2e8f0}
+.sidebar.collapsed{width:0;overflow:hidden;border-right:none}
+
+/* 侧边栏头部 */
+.sidebar-header{height:48px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;
+border-bottom:1px solid #e2e8f0}
+.sidebar-header h2{font-size:17px;color:#333;display:flex;align-items:center;gap:8px;}
+.sidebar-header h2 img {display:block;width:24px;height:24px;}
+.history-list{flex:1;overflow-y:auto;padding:8px}
+
+/* 历史列表项：修改悬浮和选中状态 */
+.history-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:6px;cursor:pointer;font-size:14px;margin-bottom:2px;color:#475569}
+.history-item .title{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.history-item .del-btn{opacity:0;font-size:14px;padding:4px;border-radius:4px;transition:all .15s;display:flex;align-items:center;color:#94a3b8}
+/* 悬浮时：极浅灰背景，文字变蓝 */
+.history-item:hover{background:#f1f5f9;color:var(--primary)}
+/* 选中时：极浅蓝背景，文字纯蓝加粗 */
+.history-item.active{background:#e6f2ff;color:var(--primary);font-weight:500}
+.history-item:hover .del-btn{opacity:1}
+.history-item .del-btn:hover{background:#fee2e2;color:#ef4444}
+
+.sidebar-top-btns{padding:8px;border-bottom:1px solid #e2e8f0}
+
+/* 2. 新建对话按钮：把红色的 var(--accent) 改成主题蓝 var(--primary) */
+.new-chat-btn{width:100%;padding:10px;border:none;border-radius:6px;
+background:var(--primary);color:#fff;cursor:pointer;font-size:14px;font-weight:500;
+transition:all .15s;display:flex;align-items: center;justify-content: center;gap: 8px;}
+.new-chat-btn:hover{background:var(--primary-dark)}
+
+/* 分页按钮颜色同步调整 */
+.sidebar-page{display:flex;justify-content:center;align-items:center;gap:6px;
+padding:6px 8px;border-top:1px solid #e2e8f0}
+.sidebar-page button{background:none;border:1px solid #e2e8f0;color:#64748b;
+border-radius:4px;padding:4px 10px;cursor:pointer;font-size:13px;transition:all .15s}
+.sidebar-page button:hover{color:var(--primary);border-color:var(--primary)}
+.sidebar-page button:disabled{color:#cbd5e1;border-color:#f1f5f9;cursor:default}
+.sidebar-page span{color:#64748b;font-size:13px}
+
+/* ===== Main ===== */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* ===== Top Bar ===== */
+.topbar{height:48px;padding:0 20px;background:#fff;border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-left .menu-btn{background:none;border:none;font-size:22px;cursor:pointer;color:#666;
+transition:all .15s}
+.topbar-left .menu-btn:hover{color:var(--primary)}
+.topbar-left h1{font-size:18px;font-weight:600;color:var(--primary)}
+.topbar-left h1 span{color:var(--primary)}
+.topbar-left .status{font-size:13px;color:#999;margin-left:4px}
+.topbar-right{display:flex;gap:6px}
+.topbar-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:6px 12px;
+cursor:pointer;font-size:13px;color:#666;display:flex;align-items:center;gap:5px}
+.topbar-btn:hover{background:#f5f5f5;color:#333}
+
+/* ===== Messages ===== */
+.messages{flex:1;overflow-y:auto;padding:20px 0}
+
+/* User bubble */
+.msg-user{display:flex;justify-content:flex-end;padding:0 24px;margin-bottom:16px}
+.msg-user .bubble{background:var(--primary);color:#fff;padding:12px 18px;border-radius:14px 14px 4px 14px;
+font-size:16px;line-height:1.6;white-space:pre-wrap;max-width:70%;word-wrap:break-word}
+.msg-user .bubble .user-files{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+.msg-user .bubble .user-file-tag{font-size:13px;padding:2px 8px;border-radius:8px;
+background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);display:inline-flex;align-items:center;gap:3px}
+
+/* Agent bubble */
+.msg-agent{padding:0 24px;margin-bottom:24px}
+.agent-bubble{background:#fff;border:1px solid var(--border);border-radius:12px;
+max-width:85%;overflow:hidden}
+
+/* Title */
+.agent-title{padding:10px 16px;font-size:15px;font-weight:600;color:var(--primary);
+background:#fafafa;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.agent-title:empty{display:none}
+
+/* ===== Steps (phased processing) ===== */
+.agent-steps{overflow:hidden}
+.step{border-bottom:1px solid #f0f0f0}
+.step:last-child{border-bottom:none}
+.step-header{display:flex;align-items:center;gap:8px;padding:10px 16px;font-size:14px;
+user-select:none}
+.step-header.collapsible{cursor:pointer}
+.step-header .arrow{width:6px;height:6px;display:inline-flex;align-items:center;justify-content:center;font-size:5px;transition:transform .15s;flex-shrink:0}
+.step-header .arrow.open{transform:rotate(90deg)}
+.step-icon{flex-shrink:0;display:flex;align-items:center}
+.step-label{font-weight:500;color:#444}
+.step-status{margin-left:auto;font-size:12px;color:#999}
+.step-body{margin:0 16px 10px;padding:10px 14px;font-size:14px;line-height:1.6;
+white-space:pre-wrap;word-wrap:break-word;max-height:200px;overflow-y:auto}
+.step-body.hidden{display:none}
+
+/* Think step */
+.step-think .step-header{color:var(--think)}
+.step-think .step-body{background:var(--think-bg);border-radius:6px;color:#555;
+max-height:none;overflow-y:visible}
+
+/* Rewrite step */
+.step-rewrite .step-header{color:var(--rewrite)}
+.step-rewrite .step-detail{margin-left:auto;font-size:13px;color:#888;
+max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.step-rewrite .step-dot{width:8px;height:8px;border-radius:50%;background:var(--rewrite);
+animation:pulse 1.2s infinite;flex-shrink:0}
+.step-rewrite .step-dot.done{background:var(--success);animation:none}
+
+/* Tool step */
+.step-tool .step-header{background:#f5faf8}
+.step-tool .step-label{color:var(--tool)}
+.step-tool .step-body{max-height:none;overflow-y:visible;font-size:12px;color:#888;line-height:1.6}
+.step-tool .step-status.running{color:#f59e0b}
+.step-tool .step-status.done{color:var(--success)}
+
+/* Answer step */
+.step-answer .step-body{padding:14px 16px;font-size:16px;line-height:1.7;
+margin:0;max-height:none;background:none;border-left:none;color:#333;white-space:normal}
+/* Markdown inside answer */
+.step-answer .step-body p{margin:0 0 8px}
+.step-answer .step-body p:last-child{margin-bottom:0}
+.step-answer .step-body p:empty{display:none !important}
+.step-answer .step-body br + br{display:none !important}
+.step-answer .step-body code{background:#f1f3f5;padding:1px 5px;border-radius:3px;font-size:14px;font-family:Consolas,monospace}
+.step-answer .step-body pre{background:#f6f8fa;padding:10px 14px;border-radius:6px;overflow-x:auto;margin:8px 0}
+.step-answer .step-body pre code{background:none;padding:0;font-size:14px}
+.step-answer .step-body ul,.step-answer .step-body ol{padding-left:20px;margin:4px 0}
+.step-answer .step-body li{margin:2px 0}
+.step-answer .step-body li > p{margin:0 !important; padding:0 !important; display:inline !important}
+.step-answer .step-body h1,.step-answer .step-body h2,.step-answer .step-body h3{margin:10px 0 4px;font-weight:600;font-size:18px}
+.step-answer .step-body table{border-collapse:collapse;margin:8px 0;width:100%}
+.step-answer .step-body th,.step-answer .step-body td{border:1px solid #ddd;padding:6px 10px;text-align:left}
+.step-answer .step-body th{background:#f5f5f5;font-weight:600}
+.step-answer .step-body blockquote{border-left:3px solid #ddd;padding-left:12px;color:#666;margin:8px 0}
+.step-answer .step-body strong{font-weight:600}
+.step-answer .step-body hr{border:none;border-top:1px solid #eee;margin:8px 0}
+
+/* Dot animation for running tool */
+.step-tool .step-dot{width:8px;height:8px;border-radius:50%;background:#f59e0b;
+animation:pulse 1.2s infinite;flex-shrink:0}
+.step-tool .step-dot.done{background:var(--success);animation:none}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* Suggest */
+.suggest-section{padding:8px 14px;border-top:1px solid #f5f5f5}
+.suggest-section:empty{display:none}
+.suggest-label{font-size:13px;color:#999;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.suggest-tag{display:inline-block;margin:2px 6px 2px 0;padding:6px 12px;
+background:#fdf6ef;border:1px solid #e8d5bf;border-radius:12px;font-size:13px;
+color:var(--recommend);cursor:pointer;transition:all .15s}
+.suggest-tag:hover{background:#fbeee0;border-color:var(--recommend)}
+
+/* Action buttons */
+.agent-actions{padding:6px 14px;border-top:1px solid #f5f5f5;display:flex;gap:8px;justify-content:flex-end}
+.agent-actions button{background:none;border:none;font-size:13px;color:var(--action);cursor:pointer;
+padding:4px 6px;border-radius:4px;display:flex;align-items:center;gap:3px;opacity:.5;transition:opacity .15s}
+.agent-actions button:hover{background:#f5f5f5;opacity:1}
+
+/* Error */
+.msg-error{padding:0 24px;margin-bottom:16px}
+.msg-error .bubble{background:#fff2f2;border:1px solid #fecaca;border-radius:8px;
+padding:12px 16px;font-size:14px;color:var(--accent)}
+
+/* ===== Input Area ===== */
+.input-area{padding:8px 20px 12px;background:var(--bg);flex-shrink:0;position:relative}
+/* --- 默认浅蓝主题版文件标签样式 --- */
+.file-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+    padding: 0 4px;
+}
+.file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: #e6f2ff;
+    border: 1px solid #bbd6fe;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--primary);
+    box-shadow: none;
+    /* 不需要写 hover 变色了，默认就很好看 */
+}
+
+.file-chip img {
+    opacity: 0.85; /* 配合蓝色图标，微调透明度让它不刺眼 */
+}
+
+/* 仅保留关闭按钮的极简交互 */
+.file-chip .remove {
+    cursor: pointer;
+    color: var(--primary); /* 叉叉默认也是蓝色 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+    padding: 2px;
+    border-radius: 4px;
+    transition: all 0.15s;
+}
+
+/* 鼠标放在叉叉上时的反馈 */
+.file-chip .remove:hover {
+    background: rgba(0, 123, 255, 0.15); /* 稍微深一点点的蓝色底 */
+    color: var(--primary-dark);
+}
+
+.input-capsule{background:#fff;border-radius:24px;padding:12px 16px;
+box-shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06);
+border:1px solid var(--border);transition:border-color .15s,box-shadow .15s}
+.input-capsule:focus-within{border-color:var(--primary);box-shadow:0 1px 3px rgba(0,0,0,0.1),0 1px 2px rgba(0,0,0,0.06),0 0 0 1px var(--primary)}
+.input-capsule textarea{width:100%;border:none;outline:none;background:transparent;resize:none;
+min-height:48px;max-height:120px;font-size:16px;line-height:1.5;font-family:inherit;padding:0}
+.capsule-actions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.btn-capsule{width:40px;height:40px;border:none;border-radius:50%;background:transparent;cursor:pointer;
+display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;flex-shrink:0;
+transition:background .15s}
+.btn-capsule:hover{background:#f0f0f0}
+.btn-capsule input[type="file"]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.btn-capsule.btn-send{background:var(--primary);color:#fff}
+.btn-capsule.btn-send:hover{background:var(--primary-dark)}
+.btn-capsule.btn-send:disabled{background:#999;cursor:not-allowed}
+
+/* ===== Tools Button & Panel ===== */
+.tools-wrap{position:relative}
+.tools-btn{height:40px;background:none;border:none;border-radius:6px;cursor:pointer;
+padding:0 10px;display:flex;align-items:center;gap:4px;
+font-size:14px;font-weight:600;color:#555;transition:background .15s;white-space:nowrap}
+.tools-btn:hover{background:#f0f0f0}
+.tools-btn img{width:16px;height:16px;pointer-events:none}
+.upload-btn{width:40px;height:40px;background:none;border:none;border-radius:6px;cursor:pointer;
+padding:0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+transition:background .15s}
+.upload-btn:hover{background:#f0f0f0}
+.upload-btn input[type="file"]{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.tools-panel{display:none;background:#fff;border:1px solid var(--border);border-radius:8px;
+padding:10px;position:absolute;bottom:100%;left:0;margin-bottom:8px;min-width:220px;
+box-shadow:0 2px 12px rgba(0,0,0,.12);z-index:20}
+.tools-panel.show{display:block}
+.tool-toggle{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;
+cursor:pointer;font-size:14px;color:#555;transition:all .15s;user-select:none}
+.tool-toggle:hover{background:#f5f5f5}
+.tool-toggle input[type="checkbox"]{accent-color:var(--primary);width:16px;height:16px;cursor:pointer}
+.tool-toggle .tool-icon{font-size:16px;flex-shrink:0}
+.tool-toggle .tool-name{font-weight:500}
+.tool-toggle .tool-desc{font-size:12px;color:#999;margin-left:auto}
+
+/* ===== 拖拽上传高亮样式 ===== */
+.input-capsule.drag-over {
+    /* 1. 边框换成主题色虚线，保留极浅的蓝色背景感 */
+    border: 2px dashed var(--primary) !important;
+    background-color: rgba(0, 123, 255, 0.05) !important;
+    box-shadow: none !important;
+    position: relative; /* 定位基准 */
+}
+/* 2. 文字遮罩层 */
+.input-capsule.drag-over::after {
+    content: "将文件拖放到此处";
+    position: absolute;
+    inset: 0; /* 撑满整个输入框 */
+    /* 背景用高透明度的白色，既能盖住底下的按钮和文字，又能透出外层的浅蓝 */
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--primary);
+    font-weight: 500;
+    z-index: 20;
+    border-radius: inherit;
+    pointer-events: none; /* 防止闪烁Bug */
+}
+
+/* ===== Icon Sizes ===== */
+.new-chat-btn img,.topbar-btn img{width:16px;height:16px}
+.scroll-bottom-btn img{width:20px;height:20px}
+.upload-btn>img{width:20px;height:20px;pointer-events:none}
+.btn-capsule.btn-send img{width:22px;height:22px}
+.step-icon img{width:14px;height:14px}
+.agent-title img{width:14px;height:14px;vertical-align:middle}
+.agent-actions button img{width:14px;height:14px}
+.suggest-label img{width:12px;height:12px;vertical-align:middle}
+.del-btn img{width:12px;height:12px}
+.file-chip>img{width:12px;height:12px;vertical-align:middle}
+.file-chip .remove img{width:12px;height:12px}
+.user-file-tag img{width:12px;height:12px;vertical-align:middle}
+.spacer{flex:1}
+.hidden{display:none!important}
+
+/* ===== Scrollbar ===== */
+.messages::-webkit-scrollbar,.step-body::-webkit-scrollbar{width:4px}
+.messages::-webkit-scrollbar-thumb,.step-body::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+.history-list::-webkit-scrollbar{width:4px}
+.history-list::-webkit-scrollbar-track{background:transparent}
+.history-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+
+/* ===== Scroll-to-bottom ===== */
+.scroll-bottom-wrap{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+margin-bottom:8px;z-index:10;pointer-events:none}
+.scroll-bottom-btn{width:40px;height:40px;border-radius:50%;
+background:var(--primary);color:#fff;border:none;cursor:pointer;
+display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);
+transition:all .2s;pointer-events:auto}
+.scroll-bottom-btn:hover{background:var(--primary-dark);transform:scale(1.1)}
+.scroll-bottom-btn.show{display:flex}
+
+/* ===== Help Modal ===== */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);
+display:none;align-items:center;justify-content:center;z-index:100}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:12px;padding:24px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto}
+.modal h2{font-size:18px;margin-bottom:12px;color:var(--primary)}
+.modal p{font-size:15px;line-height:1.7;color:#555;margin-bottom:8px}
+.modal .close-modal{margin-top:16px;padding:8px 18px;border:1px solid var(--border);border-radius:6px;
+background:#fff;cursor:pointer;font-size:14px;float:right;transition:all .15s}
+.modal .close-modal:hover{background:#f5f5f5;color:#333}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<h2><img src="static/img/千问.png"> Qwen3.5-9B</h2>
+</div>
+<div class="sidebar-top-btns">
+<button class="new-chat-btn" onclick="newChat()"><img src="static/img/新对话.png"> 新对话</button>
+</div>
+<div class="history-list" id="historyList"></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+<div class="topbar-left">
+<button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
+<h1>吉泰安<span>智能小助手</span></h1>
+<span class="status" id="statusText">就绪</span>
+</div>
+<div class="topbar-right">
+<button class="topbar-btn" onclick="location.href='/agent/logs'"><img src="static/img/日志.png"> 日志</button>
+<button class="topbar-btn" onclick="clearChat()"><img src="static/img/清空.png"> 清空</button>
+<button class="topbar-btn" onclick="showHelp()"><img src="static/img/帮助与说明.png"> 说明</button>
+</div>
+</header>
+
+<div class="messages" id="messages"></div>
+
+<div class="input-area">
+<div class="scroll-bottom-wrap">
+<button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollBottom()" title="回到最新"><img src="static/img/回到底部.png"></button>
+</div>
+<div class="input-capsule">
+<div class="file-chips hidden" id="fileChips"></div>
+<textarea id="userInput" placeholder="输入问题，支持多轮对话..." rows="1" oninput="autoResize(this)"></textarea>
+<div class="capsule-actions">
+<button class="upload-btn" title="上传文件">
+<img src="static/img/文件夹.png">
+<input type="file" id="fileInput" multiple accept=".pdf,.docx,.xlsx,.txt,.md,.pptx" onchange="handleFiles(this.files)">
+</button>
+<div class="tools-wrap">
+<button class="tools-btn" onclick="toggleToolsPanel()" title="更多工具">
+<img src="static/img/更多.png"> 工具
+</button>
+<div class="tools-panel" id="toolsPanel">
+<label class="tool-toggle"><input type="checkbox" checked data-tool="es_search"><span class="tool-icon">🔍</span><span class="tool-name">检索</span><span class="tool-desc">知识库</span></label>
+<label class="tool-toggle"><input type="checkbox" checked data-tool="calculate"><span class="tool-icon">🧮</span><span class="tool-name">计算</span><span class="tool-desc">合金参数</span></label>
+<label class="tool-toggle"><input type="checkbox" checked data-tool="file_parse"><span class="tool-icon">📄</span><span class="tool-name">文件</span><span class="tool-desc">PDF/Word</span></label>
+</div>
+</div>
+<div class="spacer"></div>
+<button class="btn-capsule btn-send" id="sendBtn" onclick="send()" title="发送"><img src="static/img/发送.png"></button>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<div class="modal-overlay" id="helpModal">
+<div class="modal">
+<h2>吉泰安智能小助手</h2>
+<p>基于 LangGraph 的 ReAct Agent，支持三个工具：</p>
+<p><b>es_search</b> — 知识库检索</p>
+<p><b>file_parse</b> — 文件解析（PDF/DOCX/XLSX/TXT）</p>
+<p><b>calculate</b> — 合金材料参数计算</p>
+<p>支持多轮对话和文件上传。Agent 会自动选择合适的工具处理问题。</p>
+<button class="close-modal" onclick="hideHelp()">关闭</button>
+</div>
+</div>
+
+<script>
+// 初始化 Marked.js：合并配置，一次性注入
+marked.use(
+    window.markedKatex ? window.markedKatex({ throwOnError: false, nonStreaming: true }) : {},
+    { breaks: false }
+);
+
+// ===== DOM =====
+const msgBox = document.getElementById('messages');
+const input = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const statusText = document.getElementById('statusText');
+const fileChipsEl = document.getElementById('fileChips');
+const historyList = document.getElementById('historyList');
+const scrollBottomBtn = document.getElementById('scrollBottomBtn');
+
+// ===== Scroll-to-bottom button visibility =====
+msgBox.addEventListener('scroll', () => {
+    const distanceFromBottom = msgBox.scrollHeight - msgBox.scrollTop - msgBox.clientHeight;
+    if (distanceFromBottom > 200) {
+        scrollBottomBtn.classList.add('show');
+    } else {
+        scrollBottomBtn.classList.remove('show');
+    }
+});
+
+// ===== State =====
+let chatHistory = [];
+let uploadedFiles = [];
+let conversations = [];
+let currentConvId = null;
+let lastUserQuery = '';
+let convPage = 1;
+const ITEM_HEIGHT = 40; // 每个会话项大约高度(px)
+let convPerPage = 50;   // 默认值，renderHistory 时动态计算
+
+// Agent bubble state (per request)
+let currentGroup = null;      // .agent-bubble element
+let currentPhase = 'idle';    // idle | rewrite | thinking | tool | answering
+let thinkRound = 0;           // counts think phases (1, 2, ...)
+let currentStepEl = null;     // current step DOM element
+let currentStepBody = null;   // current step body element
+let currentStepText = '';     // accumulated text for current step
+let maybeRendered = false;
+let rewriteStepEl = null;     // rewrite step element
+let abortController = null;   // 用于取消当前流式请求
+let isGenerating = false;     // 是否正在生成
+
+// ===== Init =====
+loadConversations();
+input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+// ===== Sidebar =====
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+}
+function showHelp() { document.getElementById('helpModal').classList.add('show'); }
+function hideHelp() { document.getElementById('helpModal').classList.remove('show'); }
+document.getElementById('helpModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) hideHelp();
+});
+
+// ===== Conversations =====
+function loadConversations() {
+    try {
+        const raw = localStorage.getItem('agent_conversations');
+        if (raw) conversations = JSON.parse(raw);
+    } catch(e) {}
+    renderHistory();
+    if (!conversations.length) newChat();
+    else { currentConvId = conversations[0].id; renderHistory(); }
+}
+function saveConversations() {
+    try { localStorage.setItem('agent_conversations', JSON.stringify(conversations.slice(0, 50))); } catch(e) {}
+}
+function newChat() {
+    const id = Date.now().toString(36);
+    conversations.unshift({ id, title: '新对话', history: [] });
+    currentConvId = id;
+    chatHistory = [];
+    msgBox.innerHTML = '';
+    saveConversations();
+    convPage = 1;
+    renderHistory();
+    statusText.textContent = '就绪';
+}
+function clearChat() {
+    if (!confirm('清空当前对话？')) return;
+    const conv = conversations.find(c => c.id === currentConvId);
+    if (conv) { conv.title = '新对话'; conv.history = []; }
+    chatHistory = [];
+    msgBox.innerHTML = '';
+    saveConversations();
+    renderHistory();
+    statusText.textContent = '就绪';
+}
+// 新增：删除单个对话功能
+function deleteConversation(e, id) {
+    e.stopPropagation(); // 阻止触发切换事件
+    if (!confirm('确定删除此对话吗？')) return;
+    conversations = conversations.filter(c => c.id !== id);
+    saveConversations();
+
+    if (currentConvId === id) {
+        if (conversations.length > 0) switchConversation(conversations[0].id);
+        else newChat();
+    } else {
+        const totalPages = Math.max(1, Math.ceil(conversations.length / convPerPage));
+        if (convPage > totalPages) convPage = totalPages;
+        renderHistory();
+    }
+}
+function switchConversation(id) {
+    const conv = conversations.find(c => c.id === id);
+    if (!conv) return;
+    currentConvId = id;
+    chatHistory = JSON.parse(JSON.stringify(conv.history || []));
+    msgBox.innerHTML = '';
+    for (const msg of chatHistory) {
+        if (msg.role === 'user') addUserBubble(msg.content);
+        else addAgentBubbleStatic(msg.content);
+    }
+    renderHistory();
+}
+function renderHistory() {
+    const total = conversations.length;
+    // 动态计算每页条数：根据侧边栏实际可用高度
+    const listH = historyList.clientHeight;
+    if (listH > 0) convPerPage = Math.max(20, Math.floor(listH / ITEM_HEIGHT));
+    const totalPages = Math.max(1, Math.ceil(total / convPerPage));
+    if (convPage > totalPages) convPage = totalPages;
+
+    const start = (convPage - 1) * convPerPage;
+    const pageItems = conversations.slice(start, start + convPerPage);
+
+    historyList.innerHTML = pageItems.map(c =>
+        `<div class="history-item${c.id===currentConvId?' active':''}" onclick="switchConversation('${c.id}')">
+            <span class="title" title="${escapeHtml(c.title)}">${escapeHtml(c.title)}</span>
+            <span class="del-btn" onclick="deleteConversation(event, '${c.id}')" title="删除"><img src="static/img/关闭.png"></span>
+        </div>`
+    ).join('');
+
+    // 分页控件（放在 historyList 下方，通过 footer 上方显示）
+    let pagerEl = document.getElementById('convPager');
+    if (!pagerEl) {
+        pagerEl = document.createElement('div');
+        pagerEl.id = 'convPager';
+        pagerEl.className = 'sidebar-page';
+        historyList.parentNode.insertBefore(pagerEl, historyList.nextSibling);
+    }
+    if (totalPages <= 1) {
+        pagerEl.classList.add('hidden');
+    } else {
+        pagerEl.classList.remove('hidden');
+        pagerEl.innerHTML = `
+            <button onclick="convGoPage(${convPage-1})" ${convPage<=1?'disabled':''}>‹</button>
+            <span>${convPage} / ${totalPages}</span>
+            <button onclick="convGoPage(${convPage+1})" ${convPage>=totalPages?'disabled':''}>›</button>`;
+    }
+}
+function convGoPage(p) {
+    const totalPages = Math.max(1, Math.ceil(conversations.length / convPerPage));
+    convPage = Math.max(1, Math.min(p, totalPages));
+    renderHistory();
+}
+// 窗口大小变化时重新计算分页
+window.addEventListener('resize', () => renderHistory());
+// 点击输入区任意位置聚焦 textarea（排除按钮）
+document.querySelector('.input-capsule').addEventListener('click', function(e) {
+    if (!e.target.closest('button') && !e.target.closest('input')) {
+        input.focus();
+    }
+});
+
+// ===== Tools Panel =====
+function toggleToolsPanel() {
+    document.getElementById('toolsPanel').classList.toggle('show');
+}
+// 点击外部关闭面板
+document.addEventListener('click', e => {
+    const wrap = document.querySelector('.tools-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('toolsPanel').classList.remove('show');
+    }
+});
+function getAllowedTools() {
+    const checks = document.querySelectorAll('#toolsPanel input[data-tool]');
+    const selected = [];
+    checks.forEach(c => { if (c.checked) selected.push(c.dataset.tool); });
+    return selected.length ? selected : null;
+}
+
+// ===== File Upload =====
+async function handleFiles(fileList) {
+    if (!fileList.length) return;
+    statusText.textContent = '上传中...';
+    const formData = new FormData();
+    for (const f of fileList) formData.append('files', f);
+    try {
+        const resp = await fetch('/agent/api/upload', { method: 'POST', body: formData });
+        const data = await resp.json();
+        if (data.error) { alert(data.error); return; }
+        for (let i = 0; i < data.paths.length; i++)
+            uploadedFiles.push({ path: data.paths[i], name: data.names[i] });
+        renderFileChips();
+    } catch (e) { alert('上传失败: ' + e.message); }
+    statusText.textContent = '就绪';
+    document.getElementById('fileInput').value = '';
+}
+function removeFile(idx) { uploadedFiles.splice(idx, 1); renderFileChips(); }
+function renderFileChips() {
+    if (!uploadedFiles.length) { fileChipsEl.classList.add('hidden'); return; }
+    fileChipsEl.classList.remove('hidden');
+    fileChipsEl.innerHTML = uploadedFiles.map((f, i) =>
+        `<span class="file-chip"><img src="static/img/文档.png"> ${escapeHtml(f.name)}<span class="remove" onclick="removeFile(${i})"><img src="static/img/关闭.png"></span></span>`
+    ).join('');
+}
+
+
+// ===== Drag and Drop File Upload =====
+const inputCapsule = document.querySelector('.input-capsule');
+// 1. 阻止浏览器默认的拖拽行为
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    inputCapsule.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+});
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+// 2. 当文件拖入/悬停在输入框上方时，加上高亮样式
+['dragenter', 'dragover'].forEach(eventName => {
+    inputCapsule.addEventListener(eventName, () => {
+        inputCapsule.classList.add('drag-over');
+    }, false);
+});
+// 3. 当文件离开输入框上方或松手放下时，移除高亮样式
+['dragleave', 'drop'].forEach(eventName => {
+    inputCapsule.addEventListener(eventName, () => {
+        inputCapsule.classList.remove('drag-over');
+    }, false);
+});
+// 4. 处理松手放下事件（复用你写好的 handleFiles）
+inputCapsule.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+
+    if (files && files.length > 0) {
+        handleFiles(files);
+    }
+}, false);
+
+
+// ===== DOM Helpers =====
+function escapeHtml(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderMarkdown(text) {
+    if (!text || typeof marked === 'undefined') return escapeHtml(text || '');
+
+    let normalized = text
+        .replace(/\r\n/g, '\n')
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/[\xA0\u3000]/g, ' ')
+        .replace(/[ \t]+$/gm, '')
+        .replace(/\n{2,}/g, '\n\n')   // 所有连续空行压为最多一个段落分隔
+        .replace(/^\n+/, '')            // 去掉开头空行
+        .replace(/\n+$/, '');           // 去掉结尾空行
+
+    try {
+        return marked.parse(normalized);
+    } catch(e) {
+        return escapeHtml(text);
+    }
+}
+
+// User bubble
+function addUserBubble(text, files) {
+    const row = document.createElement('div');
+    row.className = 'msg-user';
+    let filesHtml = '';
+    if (files && files.length) {
+        filesHtml = '<div class="user-files">' +
+            files.map(f => `<span class="user-file-tag"><img src="static/img/文档.png"> ${escapeHtml(f)}</span>`).join('') +
+            '</div>';
+    }
+    row.innerHTML = `<div class="bubble">${escapeHtml(text)}${filesHtml}</div>`;
+    msgBox.appendChild(row);
+    msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+// Static agent bubble (for history rebuild)
+function addAgentBubbleStatic(text) {
+    let display = text;
+    const maybeMatch = display.match(/<maybe>([\s\S]*?)<\/maybe>/);
+    if (maybeMatch) display = display.replace(/<maybe>[\s\S]*?<\/maybe>/g, '');
+    display = display.trim();
+    if (!display) return;
+    const html = renderMarkdown(display);
+    const el = document.createElement('div');
+    el.className = 'msg-agent';
+    el.innerHTML = `<div class="agent-bubble"><div class="step-answer"><div class="step-body">${html}</div></div></div>`;
+    msgBox.appendChild(el);
+}
+
+// ===== Create agent bubble with steps container =====
+function createAgentGroup() {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-agent';
+    wrap.innerHTML = `<div class="agent-bubble">
+        <div class="agent-title"></div>
+        <div class="agent-steps"></div>
+    </div>`;
+    msgBox.appendChild(wrap);
+    msgBox.scrollTop = msgBox.scrollHeight;
+    return wrap.querySelector('.agent-bubble');
+}
+
+function getStepsContainer() {
+    if (!currentGroup) currentGroup = createAgentGroup();
+    return currentGroup.querySelector('.agent-steps');
+}
+
+function scrollBottom() { msgBox.scrollTop = msgBox.scrollHeight; scrollBottomBtn.classList.remove('show'); }
+
+// ===== Step creation =====
+
+function createRewriteStep() {
+    const steps = getStepsContainer();
+    const step = document.createElement('div');
+    step.className = 'step step-rewrite';
+    step.innerHTML = `<div class="step-header">
+        <span class="step-dot"></span>
+        <span class="step-icon"><img src="static/img/查询优化.png"></span>
+        <span class="step-label">查询优化</span>
+        <span class="step-detail"></span>
+    </div>`;
+    steps.appendChild(step);
+    rewriteStepEl = step;
+    scrollBottom();
+}
+
+function updateRewriteStep(msg) {
+    if (!rewriteStepEl) return;
+    const dot = rewriteStepEl.querySelector('.step-dot');
+    const detail = rewriteStepEl.querySelector('.step-detail');
+    if (msg.includes('查询已优化')) {
+        const query = msg.replace(/.*查询已优化[：:]\s*/, '').trim();
+        if (dot) dot.classList.add('done');
+        if (detail) detail.textContent = query || '完成';
+    } else {
+        if (detail) detail.textContent = '处理中...';
+    }
+}
+
+function createThinkStep() {
+    const steps = getStepsContainer();
+    const step = document.createElement('div');
+    step.className = 'step step-think';
+    const label = thinkRound <= 1 ? '思考过程' : '深入分析';
+    step.innerHTML = `<div class="step-header collapsible" onclick="toggleStepBody(this)">
+        <span class="arrow open">&#9654;</span>
+        <span class="step-icon"><img src="static/img/思考.png"></span>
+        <span class="step-label">${label}</span>
+    </div>
+    <div class="step-body"></div>`;
+    steps.appendChild(step);
+    currentStepEl = step;
+    currentStepBody = step.querySelector('.step-body');
+    currentStepText = '';
+    scrollBottom();
+}
+
+function createToolStep(toolMsg) {
+    const steps = getStepsContainer();
+    const toolName = toolMsg.replace(/.*调用工具[：:]\s*/, '').replace(/\s*$/, '');
+    const step = document.createElement('div');
+    step.className = 'step step-tool';
+    step.innerHTML = `<div class="step-header collapsible" onclick="toggleStepBody(this)">
+        <span class="step-dot"></span>
+        <span class="step-icon"><img src="static/img/工具.png"></span>
+        <span class="step-label">调用工具：${escapeHtml(toolName)}</span>
+        <span class="step-status running">执行中...</span>
+    </div>
+    <div class="step-body"></div>`;
+    steps.appendChild(step);
+    currentStepEl = step;
+    currentStepBody = step.querySelector('.step-body');
+    currentStepText = '';
+    scrollBottom();
+}
+
+function updateToolLabel(msg) {
+    if (!currentStepEl) return;
+    const label = currentStepEl.querySelector('.step-label');
+    if (label) {
+        const toolName = msg.replace(/.*调用工具[：:]\s*/, '').trim();
+        label.textContent = toolName ? '调用工具：' + toolName : '调用工具...';
+    }
+}
+
+function createAnswerStep() {
+    const steps = getStepsContainer();
+    const step = document.createElement('div');
+    step.className = 'step step-answer';
+    step.innerHTML = `<div class="step-header">
+        <span class="step-icon"><img src="static/img/机器人.png"></span>
+        <span class="step-label">回答</span>
+    </div>
+    <div class="step-body"></div>`;
+    steps.appendChild(step);
+    currentStepEl = step;
+    currentStepBody = step.querySelector('.step-body');
+    currentStepText = '';
+    scrollBottom();
+}
+
+function toggleStepBody(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.arrow');
+    body.classList.toggle('hidden');
+    arrow.classList.toggle('open');
+}
+
+// ===== Step updates =====
+
+function appendToThinkStep(text) {
+    currentStepText += text;
+    // 去掉开头的空行，压缩连续空行为单行
+    let cleaned = currentStepText.replace(/\n\s*\n/g, '\n').replace(/^\n+/, '');
+    currentStepBody.textContent = cleaned;
+    currentStepBody.scrollTop = currentStepBody.scrollHeight;
+    scrollBottom();
+}
+
+function appendToAnswerStep(text) {
+    currentStepText += text;
+    let display = currentStepText.replace(/\n{3,}/g, '\n\n');
+
+    // Render markdown
+    const trimmed = display.trim();
+    if (trimmed) {
+        currentStepBody.innerHTML = renderMarkdown(trimmed);
+    } else {
+        currentStepBody.textContent = '';
+    }
+    scrollBottom();
+}
+
+function handleMaybe(data) {
+    const questions = data.questions || [];
+    if (questions.length) renderSuggest(questions.slice(0, 3));
+}
+
+function markToolDone() {
+    if (!currentStepEl) return;
+    const status = currentStepEl.querySelector('.step-status');
+    const dot = currentStepEl.querySelector('.step-dot');
+    if (status) { status.textContent = '完成'; status.className = 'step-status done'; }
+    if (dot) dot.classList.add('done');
+}
+
+function setTitle(text) {
+    if (!currentGroup) currentGroup = createAgentGroup();
+    const el = currentGroup.querySelector('.agent-title');
+    el.innerHTML = '<img src="static/img/标题.png"> ' + escapeHtml(text);
+    el.classList.remove('hidden');
+    // 同步更新左侧栏会话标题
+    const conv = conversations.find(c => c.id === currentConvId);
+    if (conv) {
+        conv.title = text;
+        saveConversations();
+        renderHistory();
+    }
+    scrollBottom();
+}
+
+function renderSuggest(questions) {
+    if (!currentGroup || !questions || !questions.length) return;
+    const old = currentGroup.querySelector('.suggest-section');
+    if (old) old.remove();
+    const section = document.createElement('div');
+    section.className = 'suggest-section';
+    let html = '<div class="suggest-label"><img src="static/img/推荐.png"> 猜你想问：</div>';
+    questions.forEach(q => {
+        const safe = escapeHtml(q).replace(/'/g, "\\'");
+        html += `<span class="suggest-tag" onclick="askSuggestion('${safe}')">${escapeHtml(q)}</span>`;
+    });
+    section.innerHTML = html;
+    currentGroup.appendChild(section);
+    scrollBottom();
+}
+
+function showActions() {
+    if (!currentGroup) return;
+    const old = currentGroup.querySelector('.agent-actions');
+    if (old) old.remove();
+    const actions = document.createElement('div');
+    actions.className = 'agent-actions';
+    actions.innerHTML = `<button onclick="copyAnswer(this)" title="复制"><img src="static/img/复制.png"></button>
+        <button onclick="regenerate()" title="重新生成"><img src="static/img/重新生成.png"></button>`;
+    currentGroup.appendChild(actions);
+}
+
+function copyAnswer(btn) {
+    const bubble = btn.closest('.agent-bubble');
+    const answerStep = bubble.querySelector('.step-answer .step-body');
+    if (answerStep) navigator.clipboard.writeText(answerStep.textContent).then(() => {
+        btn.innerHTML = '<img src="static/img/已复制.png">';
+        btn.title = '已复制';
+        setTimeout(() => { btn.innerHTML = '<img src="static/img/复制.png">'; btn.title = '复制'; }, 1500);
+    });
+}
+
+function regenerate() {
+    if (!lastUserQuery) return;
+    input.value = lastUserQuery;
+    autoResize(input);
+    send();
+}
+
+window.askSuggestion = function(question) {
+    input.value = question;
+    input.focus();
+    autoResize(input);
+};
+
+function addError(text) {
+    const el = document.createElement('div');
+    el.className = 'msg-error';
+    el.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>`;
+    msgBox.appendChild(el);
+    scrollBottom();
+}
+
+// ===== Finalize =====
+
+function finalizeAnswer() {
+    if (currentGroup) {
+        currentGroup.querySelectorAll('.step-think').forEach(s => {
+            const body = s.querySelector('.step-body');
+            if (!body || !body.textContent.trim()) s.classList.add('hidden');
+        });
+        if (rewriteStepEl) {
+            const detail = rewriteStepEl.querySelector('.step-detail');
+            if (!detail || !detail.textContent.trim()) rewriteStepEl.classList.add('hidden');
+        }
+        const titleEl = currentGroup.querySelector('.agent-title');
+        if (titleEl && !titleEl.textContent.trim()) titleEl.classList.add('hidden');
+        currentGroup.querySelectorAll('.step-tool .step-dot:not(.done)').forEach(d => d.classList.add('done'));
+        currentGroup.querySelectorAll('.step-tool .step-status.running').forEach(s => {
+            s.textContent = '完成'; s.className = 'step-status done';
+        });
+        currentGroup.querySelectorAll('.step-rewrite .step-dot:not(.done)').forEach(d => d.classList.add('done'));
+        showActions();
+    }
+    if (currentStepText.trim() && currentPhase === 'answering') {
+        chatHistory.push({ role: 'assistant', content: currentStepText.trim() });
+    }
+    const conv = conversations.find(c => c.id === currentConvId);
+    if (conv) { conv.history = JSON.parse(JSON.stringify(chatHistory)); saveConversations(); }
+
+    currentGroup = null;
+    currentPhase = 'idle';
+    thinkRound = 0;
+    currentStepEl = null;
+    currentStepBody = null;
+    currentStepText = '';
+    maybeRendered = false;
+    rewriteStepEl = null;
+}
+
+// ===== Event Handling =====
+
+function handleEvent(name, data) {
+    switch (name) {
+        case 'progress': handleProgress(data); break;
+        case 'think': handleThink(data); break;
+        case 'output': handleOutput(data); break;
+        case 'title': setTitle(data.content || ''); break;
+        case 'maybe': handleMaybe(data); break;
+        case 'final': break;
+        case 'error': addError(data.message || '未知错误'); break;
+    }
+}
+
+function handleProgress(data) {
+    const msg = data.message || '';
+    if (!msg) return;
+
+    if (msg.includes('调用工具')) {
+        if (currentPhase !== 'tool') {
+            if (currentPhase === 'answering') {
+                const answerStep = currentGroup ? currentGroup.querySelector('.step-answer:last-child') : null;
+                if (answerStep) {
+                    const body = answerStep.querySelector('.step-body');
+                    if (!body || !body.textContent.trim()) answerStep.remove();
+                }
+            }
+            currentPhase = 'tool';
+            createToolStep(msg);
+        } else {
+            updateToolLabel(msg);
+        }
+    } else if (msg.includes('查询已优化')) {
+        if (currentPhase === 'rewrite') updateRewriteStep(msg);
+    } else if (currentPhase === 'tool' && currentStepEl) {
+        // 判断是否是子图进度（含 emoji 前缀）或工具执行消息
+        const isSubgraphProgress = /^[🔍✅⚠️🤔🔄📥📄📋🧮🏷️ℹ️🔀]/.test(msg);
+        const isToolExecution = msg.startsWith('执行工具');
+        if (isSubgraphProgress || isToolExecution) {
+            // 子图进度消息：追加到 step-body 并自动展开
+            if (currentStepBody) {
+                currentStepBody.textContent += msg + '\n';
+            }
+            // 同时更新右侧状态文本
+            const status = currentStepEl.querySelector('.step-status');
+            if (status) {
+                const clean = msg.replace(/[^\x20-\x7E\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]/g, '').trim();
+                if (clean) status.textContent = clean;
+            }
+        } else {
+            // 主图事件（如"正在分析问题..."、"生成推荐问题..."）：工具已完成
+            markToolDone();
+            currentPhase = 'idle';
+            // 重新处理这条消息（此时 phase 已经不是 tool）
+            handleProgress(data);
+            return;
+        }
+        scrollBottom();
+    } else if (msg.includes('优化')) {
+        if (currentPhase === 'idle') {
+            currentPhase = 'rewrite';
+            createRewriteStep();
+        }
+    }
+}
+
+function handleThink(data) {
+    const text = data.content || data.message || '';
+    if (!text) return;
+    if (currentPhase !== 'thinking') {
+        thinkRound++;
+        currentPhase = 'thinking';
+        createThinkStep();
+    }
+    appendToThinkStep(text);
+}
+
+function handleOutput(data) {
+    const text = data.content || '';
+    if (!text) return;
+    if (currentPhase !== 'answering' && !text.trim()) return;
+    if (currentPhase === 'tool') markToolDone();
+    if (currentPhase !== 'answering') {
+        currentPhase = 'answering';
+        createAnswerStep();
+    }
+    appendToAnswerStep(text);
+}
+
+// ===== Stop Generation =====
+function stopGeneration() {
+    if (abortController) {
+        abortController.abort();
+        abortController = null;
+    }
+}
+
+// ===== Send =====
+async function send() {
+    const query = input.value.trim();
+    if (!query || sendBtn.disabled) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    lastUserQuery = query;
+
+    // 切换为停止按钮
+    abortController = new AbortController();
+    isGenerating = true;
+    sendBtn.onclick = stopGeneration;
+    sendBtn.innerHTML = '<img src="static/img/停止.png">';
+    sendBtn.title = '停止生成';
+    statusText.textContent = '处理中...';
+
+    currentGroup = null;
+    currentPhase = 'idle';
+    thinkRound = 0;
+    currentStepEl = null;
+    currentStepBody = null;
+    currentStepText = '';
+    maybeRendered = false;
+    rewriteStepEl = null;
+
+    const fileNames = uploadedFiles.map(f => f.name);
+    addUserBubble(query, fileNames);
+    chatHistory.push({ role: 'user', content: query });
+
+    const minioPaths = uploadedFiles.length ? uploadedFiles.map(f => f.path) : undefined;
+    uploadedFiles = [];
+    renderFileChips();
+
+    try {
+        const resp = await fetch('/agent/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_query: query,
+                history: chatHistory.length > 1 ? chatHistory.slice(0, -1) : [],
+                minio_paths: minioPaths,
+                file_names: fileNames.length ? fileNames : undefined,
+                allowed_tools: getAllowedTools(),
+            }),
+            signal: abortController.signal,
+        });
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+            let eventName = '';
+            for (const line of lines) {
+                if (line.startsWith('event: ')) eventName = line.slice(7).trim();
+                else if (line.startsWith('data: ')) {
+                    try {
+                        const data = JSON.parse(line.slice(6));
+                        handleEvent(eventName, data);
+                    } catch(e) {}
+                }
+            }
+        }
+    } catch (e) {
+        if (e.name === 'AbortError') {
+            // 用户主动停止，保留已收到的部分回答
+        } else {
+            addError('连接错误: ' + e.message);
+        }
+    }
+    finalizeAnswer();
+
+    // 恢复为发送按钮
+    abortController = null;
+    isGenerating = false;
+    sendBtn.onclick = send;
+    sendBtn.innerHTML = '<img src="static/img/发送.png">';
+    sendBtn.title = '发送';
+    statusText.textContent = '就绪';
+    input.focus();
+}
+</script>
+</body>
+</html>

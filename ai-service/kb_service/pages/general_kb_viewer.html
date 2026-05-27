@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通用知识库管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 26px;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            margin-top: 4px;
+            font-size: 13px;
+        }
+        .filter-bar {
+            padding: 15px 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .filter-bar select,
+        .filter-bar input {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+        .filter-bar select:focus,
+        .filter-bar input:focus {
+            border-color: #007bff;
+        }
+        .filter-bar button {
+            padding: 8px 18px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .filter-bar button:hover {
+            background: #0056b3;
+        }
+
+        /* 表格样式 */
+        .table-container {
+            overflow-x: auto;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .data-table thead {
+            background: #007bff;
+            color: white;
+        }
+        .data-table th {
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        .data-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .data-table tbody tr:nth-child(even):hover {
+            background: #e9ecef;
+        }
+
+        /* 状态样式 */
+        .status-active {
+            color: #28a745;
+            font-weight: 600;
+        }
+        .status-inactive {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0 2px;
+            transition: background 0.2s;
+        }
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+        .btn-view:hover {
+            background: #138496;
+        }
+        .btn-activate {
+            background: #28a745;
+            color: white;
+        }
+        .btn-activate:hover {
+            background: #218838;
+        }
+        .btn-deactivate {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-deactivate:hover {
+            background: #c82333;
+        }
+        .btn-restore {
+            background: #ffc107;
+            color: #333;
+        }
+        .btn-restore:hover {
+            background: #e0a800;
+        }
+        .btn-delete {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-delete:hover {
+            background: #5a6268;
+        }
+        .btn-edit {
+            background: #ffc107;
+            color: #333;
+        }
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 16px;
+            color: #6c757d;
+        }
+        .error {
+            text-align: center;
+            padding: 60px;
+            color: #dc3545;
+        }
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            background: #007bff;
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
+            border-radius: 8px 8px 0 0;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+        }
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-field {
+            margin-bottom: 16px;
+        }
+        .modal-field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+        .modal-field textarea,
+        .modal-field input,
+        .modal-field select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .modal-field textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .modal-field textarea:focus,
+        .modal-field input:focus,
+        .modal-field select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .modal-footer {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid #dee2e6;
+            background: #f8f9fa;
+        }
+        .modal-footer button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .modal-footer .btn-cancel {
+            background: #6c757d;
+            color: white;
+        }
+        .modal-footer .btn-save {
+            background: #007bff;
+            color: white;
+        }
+
+        /* 分块表格 */
+        .chunks-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .chunks-table thead {
+            background: #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .chunks-table th {
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .chunks-table td {
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: top;
+        }
+        .chunks-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        .col-chunk-id {
+            font-family: monospace;
+            font-size: 10px;
+            color: #6c757d;
+            max-width: 120px;
+            word-break: break-all;
+            text-align: center;
+        }
+        .col-content {
+            max-width: 400px;
+            line-height: 1.4;
+            color: #495057;
+        }
+        .col-tags {
+            max-width: 150px;
+            text-align: center;
+        }
+        .tag {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            margin: 2px;
+        }
+        .col-modality {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .col-modality-cell {
+            text-align: center;
+        }
+        .col-status {
+            text-align: center;
+        }
+        .col-actions {
+            text-align: center;
+        }
+        .modality-text {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .modality-table {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .modality-image {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* 上传模态框样式 */
+        .upload-dropzone {
+            border: 2px dashed #ced4da;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-dropzone:hover {
+            border-color: #007bff;
+            background: #e9ecef;
+        }
+        .upload-dropzone.dragover {
+            border-color: #007bff;
+            background: #cce5ff;
+        }
+        .upload-dropzone.has-file {
+            border-style: solid;
+            border-color: #28a745;
+            background: #d4edda;
+        }
+        .upload-icon {
+            font-size: 48px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        .upload-text {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .upload-file-info {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        .upload-file-info.active {
+            display: block;
+        }
+        .upload-file-name {
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        .upload-file-size {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* 进度条样式 */
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .progress-container.active {
+            display: block;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 24px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .progress-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .progress-status.uploading {
+            background: #cce5ff;
+            color: #004085;
+        }
+        .progress-status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .progress-status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .upload-btn {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .upload-btn:hover {
+            background: #0056b3;
+        }
+        .upload-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>通用知识库管理</h1>
+            <p>查看和管理知识库文档及其分块</p>
+        </div>
+
+        <div class="stats" id="docStats">
+            <div class="stat">
+                <div class="stat-value" id="totalDocs">0</div>
+                <div class="stat-label">总文档数</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="activeDocs">0</div>
+                <div class="stat-label">已启用</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="inactiveDocs">0</div>
+                <div class="stat-label">已禁用</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="totalChunks">0</div>
+                <div class="stat-label">总分块数</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <input type="text" id="docSearchInput" placeholder="搜索文件名..." style="width: 200px;">
+            <select id="docStatusFilter">
+                <option value="">所有状态</option>
+                <option value="active">仅已启用</option>
+                <option value="inactive">仅已禁用</option>
+            </select>
+            <button onclick="loadDocuments()">刷新数据</button>
+            <button onclick="openUploadModal()" style="background: #28a745;">📤 上传文件</button>
+        </div>
+
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>文档ID</th>
+                        <th>文件名</th>
+                        <th>分块数</th>
+                        <th>状态</th>
+                        <th>上传时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="documentsTableBody">
+                    <tr><td colspan="6" class="loading">加载中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 分块详情模态框 -->
+    <div class="modal-overlay" id="chunksModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">文档分块详情</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table class="chunks-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>模态</th>
+                                <th>内容</th>
+                                <th>标签</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalChunksBody">
+                            <tr><td colspan="6" class="loading">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑分块模态框 -->
+    <div class="modal-overlay" id="editChunkModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>编辑分块</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label>Chunk ID</label>
+                    <input type="text" id="editChunkId" readonly style="background: #f0f0f0;">
+                </div>
+                <div class="modal-field">
+                    <label>内容</label>
+                    <textarea id="editContent" rows="6" placeholder="请输入分块内容..."></textarea>
+                </div>
+                <div class="modal-field">
+                    <label>标签 (用逗号分隔)</label>
+                    <textarea id="editTags" rows="2" placeholder="例如: 标签1, 标签2, 标签3"></textarea>
+                </div>
+                <div class="modal-field">
+                    <label>部门</label>
+                    <input type="text" id="editDepartment" placeholder="例如: 安全部">
+                </div>
+                <div class="modal-field">
+                    <label>资料形态</label>
+                    <input type="text" id="editDocType" placeholder="例如: 操作规程">
+                </div>
+                <div class="modal-field">
+                    <label>系统标签 (用逗号分隔)</label>
+                    <input type="text" id="editSysTags" placeholder="例如: 标签A, 标签B">
+                </div>
+                <div class="modal-field">
+                    <label>状态</label>
+                    <select id="editIsActive">
+                        <option value="true">启用</option>
+                        <option value="false">禁用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeEditModal()">取消</button>
+                <button class="btn-save" onclick="saveChunk()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传文件模态框 -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>上传文件到知识库</h2>
+                <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- 文件选择区 -->
+                <div class="upload-dropzone" id="uploadDropzone"
+                     onclick="document.getElementById('fileInput').click()"
+                     ondragover="handleDragOver(event)"
+                     ondragleave="handleDragLeave(event)"
+                     ondrop="handleDrop(event)">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">点击选择文件或拖拽文件到此处</div>
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 8px;">
+                        支持 PDF、DOCX、PPTX、XLSX、TXT 等格式
+                    </div>
+                    <input type="file" id="fileInput" style="display: none;"
+                           accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt"
+                           onchange="handleFileSelect(event)">
+                </div>
+
+                <!-- 文件信息 -->
+                <div class="upload-file-info" id="uploadFileInfo">
+                    <div class="upload-file-name" id="uploadedFileName"></div>
+                    <div class="upload-file-size" id="uploadedFileSize"></div>
+                </div>
+
+                <!-- 元数据表单 -->
+                <div style="margin-top: 20px;">
+                    <div class="modal-field">
+                        <label>部门</label>
+                        <input type="text" id="uploadDepartment" placeholder="例如: 安全部">
+                    </div>
+                    <div class="modal-field">
+                        <label>资料形态</label>
+                        <input type="text" id="uploadDocType" placeholder="例如: 操作规程">
+                    </div>
+                    <div class="modal-field">
+                        <label>系统标签 (用逗号分隔)</label>
+                        <input type="text" id="uploadSysTags" placeholder="例如: 重要,培训资料">
+                    </div>
+                </div>
+
+                <!-- 进度条 -->
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-label">
+                        <span id="progressStage">准备上传...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBarFill">0%</div>
+                    </div>
+                    <div class="progress-status uploading" id="progressStatus">
+                        等待开始...
+                    </div>
+
+                    <!-- 可折叠日志区域 -->
+                    <div style="margin-top: 12px;">
+                        <button type="button" id="toggleLogsBtn" onclick="toggleLogs()"
+                                style="background: none; border: none; color: #007bff; padding: 0; cursor: pointer; font-size: 13px; outline: none;">
+                            <span id="toggleLogsIcon">▶</span> 查看详细日志
+                        </button>
+                        <div id="taskLogsContainer" style="display: none; margin-top: 8px;">
+                            <div id="taskLogs" style="
+                                background: #1e1e1e;
+                                border: 1px solid #444;
+                                border-radius: 4px;
+                                padding: 10px;
+                                max-height: 250px;
+                                overflow-y: auto;
+                                font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+                                font-size: 11px;
+                                line-height: 1.5;
+                                color: #d4d4d4;
+                            ">
+                                <div style="color: #808080;">等待任务开始...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 上传按钮 -->
+                <button class="upload-btn" id="uploadBtn" onclick="startUpload()" disabled>
+                    开始上传
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 自动检测 API 地址（使用相对路径，自动适应当前域名）
+        const API_BASE = '/api/kb';
+        let allDocuments = [];
+        let editingChunkId = null;
+        let editingDocId = null;
+
+        // 加载文档列表
+        async function loadDocuments() {
+            const tbody = document.getElementById('documentsTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading">加载中...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_BASE}/documents`);
+                const data = await response.json();
+
+                allDocuments = data.documents || [];
+                updateDocStats();
+                renderDocuments();
+            } catch (error) {
+                console.error('加载失败:', error);
+                tbody.innerHTML = `<tr><td colspan="6" class="error">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function updateDocStats() {
+            const total = allDocuments.length;
+            const active = allDocuments.filter(d => d.is_active).length;
+            const inactive = total - active;
+            const totalChunks = allDocuments.reduce((sum, d) => sum + (d.chunk_count || 0), 0);
+
+            document.getElementById('totalDocs').textContent = total;
+            document.getElementById('activeDocs').textContent = active;
+            document.getElementById('inactiveDocs').textContent = inactive;
+            document.getElementById('totalChunks').textContent = totalChunks;
+        }
+
+        function getFilteredDocuments() {
+            const search = document.getElementById('docSearchInput').value.toLowerCase();
+            const status = document.getElementById('docStatusFilter').value;
+
+            return allDocuments.filter(doc => {
+                const matchSearch = !search || (doc.file_name || '').toLowerCase().includes(search);
+                const matchStatus = !status ||
+                    (status === 'active' && doc.is_active) ||
+                    (status === 'inactive' && !doc.is_active);
+                return matchSearch && matchStatus;
+            });
+        }
+
+        function renderDocuments() {
+            const tbody = document.getElementById('documentsTableBody');
+            const filtered = getFilteredDocuments();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">没有找到匹配的文档</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(doc => {
+                const timeStr = doc.upload_time || '';
+                return `
+                    <tr>
+                        <td style="font-family: monospace; font-size: 11px;">${escapeHtml(doc.doc_id)}</td>
+                        <td>${escapeHtml(doc.file_name)}</td>
+                        <td>${doc.chunk_count || 0} / ${doc.total_chunks || 0}</td>
+                        <td>
+                            <span class="${doc.is_active ? 'status-active' : 'status-inactive'}">
+                                ${doc.is_active ? '已启用' : '已禁用'}
+                            </span>
+                        </td>
+                        <td style="font-size: 12px; color: #6c757d;">${formatTime(timeStr)}</td>
+                        <td>
+                            <button class="btn btn-view" onclick="viewChunks('${escapeHtml(doc.doc_id)}', '${escapeHtml(doc.file_name || doc.doc_id)}')">查看分块</button>
+                            <button class="btn btn-${doc.is_active ? 'deactivate' : 'activate'}"
+                                    onclick="toggleDocStatus('${escapeHtml(doc.doc_id)}', ${!doc.is_active})">
+                                ${doc.is_active ? '禁用' : '启用'}
+                            </button>
+                            <button class="btn btn-restore" onclick="restoreDoc('${escapeHtml(doc.doc_id)}')">恢复</button>
+                            <button class="btn btn-delete" onclick="deleteDoc('${escapeHtml(doc.doc_id)}', false)">删除</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 查看文档的分块
+        async function viewChunks(docId, docName) {
+            document.getElementById('modalTitle').textContent = `文档分块详情: ${docName}`;
+            const tbody = document.getElementById('modalChunksBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="loading">加载中...</td></tr>';
+            document.getElementById('chunksModal').classList.add('active');
+
+            try {
+                const response = await fetch(`${API_BASE}/chunks?doc_id=${docId}&size=10000`);
+                const data = await response.json();
+
+                const chunks = data.chunks || [];
+                if (chunks.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty">该文档没有分块</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = chunks.map(chunk => {
+                    const modality = chunk.modality || 'text';
+                    const modalityClass = `modality-${modality}`;
+                    return `
+                        <tr>
+                            <td class="col-chunk-id" title="${escapeHtml(chunk.chunk_id)}">${escapeHtml(chunk.chunk_id)}</td>
+                            <td class="col-modality-cell"><span class="col-modality ${modalityClass}">${modality}</span></td>
+                            <td class="col-content">${escapeHtml(chunk.content || '')}</td>
+                            <td class="col-tags">
+                                ${(chunk.chunk_tags || []).map(tag =>
+                                    `<span class="tag">${escapeHtml(tag)}</span>`
+                                ).join('')}
+                            </td>
+                            <td class="col-status">
+                                <span class="${chunk.is_active ? 'status-active' : 'status-inactive'}">
+                                    ${chunk.is_active ? '已启用' : '已禁用'}
+                                </span>
+                            </td>
+                            <td class="col-actions">
+                                <button class="btn btn-edit" onclick="openEditModal('${escapeHtml(chunk.chunk_id)}', '${escapeHtml(docId)}')">编辑</button>
+                                <button class="btn btn-${chunk.is_active ? 'deactivate' : 'activate'}"
+                                        onclick="toggleChunkStatus('${escapeHtml(chunk.chunk_id)}', ${!chunk.is_active}, '${escapeHtml(docId)}')">
+                                    ${chunk.is_active ? '禁用' : '启用'}
+                                </button>
+                                <button class="btn btn-delete" onclick="deleteChunk('${escapeHtml(chunk.chunk_id)}', false, '${escapeHtml(docId)}')">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="6" class="error">加载失败: ${error.message}</td></tr>`;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('chunksModal').classList.remove('active');
+        }
+
+        // 文档操作
+        async function toggleDocStatus(docId, isActive) {
+            if (!confirm(isActive ? '确定要启用此文档吗？' : '确定要禁用此文档吗？')) {
+                return;
+            }
+
+            try {
+                if (isActive) {
+                    await restoreDocAPI(docId);
+                    alert('文档已启用');
+                } else {
+                    await deleteDocAPI(docId, false);
+                    alert('文档已禁用');
+                }
+                await loadDocuments();
+            } catch (error) {
+                alert('操作失败: ' + error.message);
+            }
+        }
+
+        async function restoreDoc(docId) {
+            if (!confirm('确定要恢复此文档吗？')) return;
+
+            try {
+                await restoreDocAPI(docId);
+                alert('文档已恢复');
+                await loadDocuments();
+            } catch (error) {
+                alert('恢复失败: ' + error.message);
+            }
+        }
+
+        async function deleteDoc(docId, hard) {
+            const hardDelete = confirm('是否要硬删除（无法恢复）？\n\n选择"取消"进行软删除（可以恢复）');
+            const shouldHard = hardDelete ? true : !hardDelete;
+
+            const message = shouldHard ? '确定要硬删除此文档吗？删除后无法恢复！' : '确定要软删除此文档吗？';
+
+            if (!confirm(message)) return;
+
+            try {
+                await deleteDocAPI(docId, shouldHard);
+                alert('删除成功！');
+                await loadDocuments();
+            } catch (error) {
+                alert('删除失败: ' + error.message);
+            }
+        }
+
+        async function deleteDocAPI(docId, hard) {
+            const params = new URLSearchParams();
+            params.append('hard', hard);
+            const response = await fetch(`${API_BASE}/documents/${docId}?${params}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.detail || '删除失败');
+            }
+            return await response.json();
+        }
+
+        async function restoreDocAPI(docId) {
+            const response = await fetch(`${API_BASE}/documents/${docId}/restore`, {
+                method: 'POST'
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.detail || '恢复失败');
+            }
+            return await response.json();
+        }
+
+        // 分块操作
+        async function toggleChunkStatus(chunkId, isActive, docId) {
+            if (!confirm(isActive ? '确定要启用此分块吗？' : '确定要禁用此分块吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ is_active: isActive })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || '操作失败');
+                }
+
+                alert(isActive ? '已启用' : '已禁用');
+                // 刷新模态框中的分块列表
+                viewChunks(docId, document.getElementById('modalTitle').textContent.replace('文档分块详情: ', ''));
+                // 同时刷新文档列表以更新分块数
+                await loadDocuments();
+            } catch (error) {
+                alert('操作失败: ' + error.message);
+            }
+        }
+
+        async function deleteChunk(chunkId, hard, docId) {
+            const hardDelete = confirm('是否要硬删除（无法恢复）？\n\n选择"取消"进行软删除（可以恢复）');
+            const shouldHard = hardDelete ? true : !hardDelete;
+
+            const message = shouldHard ? '确定要硬删除此分块吗？删除后无法恢复！' : '确定要软删除此分块吗？';
+
+            if (!confirm(message)) return;
+
+            try {
+                const params = new URLSearchParams();
+                params.append('hard', shouldHard);
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}?${params}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || '删除失败');
+                }
+
+                alert('删除成功！');
+                // 刷新模态框中的分块列表
+                viewChunks(docId, document.getElementById('modalTitle').textContent.replace('文档分块详情: ', ''));
+                // 同时刷新文档列表以更新分块数
+                await loadDocuments();
+            } catch (error) {
+                alert('删除失败: ' + error.message);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTime(timeStr) {
+            if (!timeStr) return '未知';
+            try {
+                const date = new Date(timeStr);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            } catch (e) {
+                return timeStr;
+            }
+        }
+
+        // 编辑分块功能
+        async function openEditModal(chunkId, docId) {
+            try {
+                // 获取分块详情
+                const response = await fetch(`${API_BASE}/chunks/${chunkId}`);
+                if (!response.ok) {
+                    throw new Error('获取分块详情失败');
+                }
+                const chunk = await response.json();
+
+                editingChunkId = chunkId;
+                editingDocId = docId;
+
+                // 填充表单
+                document.getElementById('editChunkId').value = chunk.chunk_id || '';
+                document.getElementById('editContent').value = chunk.content || '';
+                document.getElementById('editTags').value = (chunk.chunk_tags || []).join(', ');
+                document.getElementById('editDepartment').value = chunk.department || '';
+                document.getElementById('editDocType').value = chunk.doc_type || '';
+                document.getElementById('editSysTags').value = (chunk.sys_tags || []).join(', ');
+                document.getElementById('editIsActive').value = chunk.is_active ? 'true' : 'false';
+
+                // 显示编辑模态框
+                document.getElementById('editChunkModal').classList.add('active');
+            } catch (error) {
+                alert('加载分块详情失败: ' + error.message);
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editChunkModal').classList.remove('active');
+            editingChunkId = null;
+            editingDocId = null;
+        }
+
+        async function saveChunk() {
+            if (!editingChunkId) return;
+
+            try {
+                // 收集表单数据
+                const content = document.getElementById('editContent').value;
+                const tagsText = document.getElementById('editTags').value;
+                const department = document.getElementById('editDepartment').value;
+                const docType = document.getElementById('editDocType').value;
+                const sysTagsText = document.getElementById('editSysTags').value;
+                const isActive = document.getElementById('editIsActive').value === 'true';
+
+                // 解析标签
+                const chunk_tags = tagsText
+                    .split(',')
+                    .map(t => t.trim())
+                    .filter(t => t);
+
+                const sys_tags = sysTagsText
+                    .split(',')
+                    .map(t => t.trim())
+                    .filter(t => t);
+
+                // 构建更新数据
+                const updateData = {};
+                if (content) updateData.content = content;
+                if (chunk_tags.length > 0) updateData.chunk_tags = chunk_tags;
+                if (department) updateData.department = department;
+                if (docType) updateData.doc_type = docType;
+                if (sys_tags.length > 0) updateData.sys_tags = sys_tags;
+                updateData.is_active = isActive;
+
+                // 发送更新请求
+                const response = await fetch(`${API_BASE}/chunks/${editingChunkId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || '更新失败');
+                }
+
+                alert('更新成功！');
+                closeEditModal();
+
+                // 刷新分块列表
+                viewChunks(editingDocId, document.getElementById('modalTitle').textContent.replace('文档分块详情: ', ''));
+                // 同时刷新文档列表
+                await loadDocuments();
+            } catch (error) {
+                alert('更新失败: ' + error.message);
+            }
+        }
+
+        // 筛选事件
+        document.getElementById('docSearchInput').addEventListener('input', renderDocuments);
+        document.getElementById('docStatusFilter').addEventListener('change', renderDocuments);
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeEditModal();
+                closeUploadModal();
+            }
+        });
+
+        // ========== 上传文件功能 ==========
+        let selectedFile = null;
+
+        // 打开上传模态框
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.add('active');
+            resetUploadForm();
+        }
+
+        // 关闭上传模态框
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+            resetUploadForm();
+        }
+
+        // 重置上传表单
+        function resetUploadForm() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadDropzone').classList.remove('has-file');
+            document.getElementById('uploadFileInfo').classList.remove('active');
+            document.getElementById('uploadDepartment').value = '';
+            document.getElementById('uploadDocType').value = '';
+            document.getElementById('uploadSysTags').value = '';
+            document.getElementById('uploadBtn').disabled = true;
+            resetProgress();
+        }
+
+        // 重置进度条
+        function resetProgress() {
+            document.getElementById('progressContainer').classList.remove('active');
+            document.getElementById('progressStage').textContent = '准备上传...';
+            document.getElementById('progressPercent').textContent = '0%';
+            document.getElementById('progressBarFill').style.width = '0%';
+            document.getElementById('progressBarFill').textContent = '0%';
+            document.getElementById('progressStatus').className = 'progress-status uploading';
+            document.getElementById('progressStatus').textContent = '等待开始...';
+        }
+
+        // 处理文件选择
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                setSelectedFile(file);
+            }
+        }
+
+        // 处理拖拽
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('uploadDropzone').classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('uploadDropzone').classList.remove('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('uploadDropzone').classList.remove('dragover');
+
+            const file = event.dataTransfer.files[0];
+            if (file) {
+                setSelectedFile(file);
+            }
+        }
+
+        // 设置选中的文件
+        function setSelectedFile(file) {
+            selectedFile = file;
+            document.getElementById('uploadDropzone').classList.add('has-file');
+            document.getElementById('uploadedFileName').textContent = file.name;
+            document.getElementById('uploadedFileSize').textContent = formatFileSize(file.size);
+            document.getElementById('uploadFileInfo').classList.add('active');
+            document.getElementById('uploadBtn').disabled = false;
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // 更新进度
+        function updateProgress(stage, percent, status, statusClass = 'uploading') {
+            document.getElementById('progressContainer').classList.add('active');
+            document.getElementById('progressStage').textContent = stage;
+
+            // 处理百分比：如果已包含 % 符号则直接使用，否则添加
+            const percentValue = percent.toString().includes('%') ? percent : percent + '%';
+            // 提取数值部分用于样式（去掉 %）
+            const numericPercent = percent.toString().replace('%', '');
+
+            // 只在进度条上方的标签中显示百分比，不在进度条内部显示
+            document.getElementById('progressPercent').textContent = percentValue;
+            document.getElementById('progressBarFill').style.width = numericPercent + '%';
+            document.getElementById('progressBarFill').textContent = ''; // 清空进度条内部文本
+            document.getElementById('progressStatus').textContent = status;
+            document.getElementById('progressStatus').className = `progress-status ${statusClass}`;
+        }
+
+        // 切换日志显示/隐藏
+        function toggleLogs() {
+            const container = document.getElementById('taskLogsContainer');
+            const icon = document.getElementById('toggleLogsIcon');
+            const isHidden = container.style.display === 'none';
+
+            if (isHidden) {
+                container.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                container.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        }
+
+        // 更新任务日志
+        function updateTaskLogs(logs) {
+            const logsContainer = document.getElementById('taskLogs');
+            if (!logs || logs.length === 0) {
+                logsContainer.innerHTML = '<div style="color: #808080;">暂无日志</div>';
+                return;
+            }
+
+            // 只显示最新的 50 条日志
+            const recentLogs = logs.slice(-50);
+
+            // 渲染日志列表（正序，最新的在下面）
+            logsContainer.innerHTML = recentLogs.map(log => {
+                const timestamp = log.timestamp || '';
+                const level = log.level || 'INFO';
+                const message = escapeHtml(log.message || '');
+
+                // 根据日志级别设置颜色（适配暗色背景）
+                let colorStyle = '';
+                let levelStyle = '';
+                if (level === 'ERROR') {
+                    colorStyle = 'color: #f48771;';
+                    levelStyle = 'color: #f48771; font-weight: bold;';
+                } else if (level === 'WARNING') {
+                    colorStyle = 'color: #dcdcaa;';
+                    levelStyle = 'color: #dcdcaa;';
+                } else {
+                    colorStyle = 'color: #d4d4d4;';
+                    levelStyle = 'color: #4ec9b0;';
+                }
+
+                return `<div style="${colorStyle}"><span style="color: #808080;">[${timestamp}]</span> <span style="${levelStyle}">[${level}]</span> ${message}</div>`;
+            }).join('');
+
+            // 自动滚动到底部（显示最新日志）
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // 开始上传
+        async function startUpload() {
+            if (!selectedFile) {
+                alert('请先选择文件');
+                return;
+            }
+
+            const department = document.getElementById('uploadDepartment').value.trim();
+            const docType = document.getElementById('uploadDocType').value.trim();
+            const sysTagsText = document.getElementById('uploadSysTags').value.trim();
+            const sysTags = sysTagsText ? sysTagsText.split(',').map(t => t.trim()).filter(t => t) : [];
+
+            // 禁用上传按钮
+            document.getElementById('uploadBtn').disabled = true;
+
+            try {
+                // 步骤1: 上传文件到MinIO
+                updateProgress('上传文件到 MinIO', '5%', '正在上传文件...', 'uploading');
+
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('kb_id', 'general');
+                if (department) formData.append('department', department);
+                if (docType) formData.append('doc_type', docType);
+                if (sysTags.length > 0) formData.append('sys_tags', sysTags.join(','));
+
+                // 监听上传进度
+                const xhr = new XMLHttpRequest();
+                const uploadPromise = new Promise((resolve, reject) => {
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            const percent = Math.round((e.loaded / e.total) * 50); // 0-50%
+                            updateProgress('上传文件到 MinIO', `${percent}%`, `正在上传文件到 MinIO... ${percent}%`, 'uploading');
+                        }
+                    });
+
+                    xhr.addEventListener('load', () => {
+                        if (xhr.status === 200) {
+                            const response = JSON.parse(xhr.responseText);
+                            resolve(response);
+                        } else if (xhr.status === 503) {
+                            const errorData = JSON.parse(xhr.responseText);
+                            reject(new Error(errorData.detail || 'Worker 未就绪'));
+                        } else {
+                            reject(new Error(`上传失败: ${xhr.status} ${xhr.statusText}`));
+                        }
+                    });
+
+                    xhr.addEventListener('error', () => {
+                        reject(new Error('网络错误'));
+                    });
+
+                    xhr.open('POST', `${API_BASE}/upload-file`);
+                    xhr.send(formData);
+                });
+
+                const uploadData = await uploadPromise;
+                console.log('文件上传成功:', uploadData);
+
+                updateProgress('提交处理任务', '55%', '文件已上传，正在提交处理任务...', 'uploading');
+
+                // 步骤2: 提交处理任务
+                const taskPayload = {
+                    minio_path: uploadData.minio_path,
+                    file_name: selectedFile.name,
+                    department: department || null,
+                    doc_type: docType || null,
+                    sys_tags: sysTags.length > 0 ? sysTags : null
+                };
+
+                const taskResponse = await fetch(`${API_BASE}/upload`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(taskPayload)
+                });
+
+                if (!taskResponse.ok) {
+                    const errorData = await taskResponse.json();
+                    throw new Error(errorData.detail || '提交任务失败');
+                }
+
+                const taskData = await taskResponse.json();
+                console.log('任务提交成功:', taskData);
+
+                // 步骤3: 开始轮询任务状态
+                updateProgress('后台处理', '60%', '任务已提交，正在后台处理...', 'uploading');
+                await pollTaskStatus(taskData.task_id, selectedFile.name);
+
+            } catch (error) {
+                console.error('上传失败:', error);
+                updateProgress('上传失败', '0%', `❌ 上传失败: ${error.message}`, 'error');
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        }
+
+        // 轮询任务状态
+        async function pollTaskStatus(taskId, fileName) {
+            const maxAttempts = 180; // 最多轮询 3 分钟（每秒一次）
+            let attempts = 0;
+            let pollCount = 0;
+
+            console.log(`[Poll] 开始轮询任务 ${taskId}`);
+
+            const poll = async () => {
+                attempts++;
+                pollCount++;
+
+                try {
+                    console.log(`[Poll] 第 ${pollCount} 次查询，任务ID: ${taskId}`);
+
+                    const response = await fetch(`${API_BASE}/tasks/${taskId}`);
+                    if (!response.ok) {
+                        console.error(`[Poll] HTTP 错误: ${response.status} ${response.statusText}`);
+                        throw new Error(`查询失败: ${response.status}`);
+                    }
+
+                    const taskData = await response.json();
+                    console.log(`[Poll] 任务状态响应:`, taskData);
+
+                    const state = taskData.status;
+                    const message = taskData.message || '';
+                    const progress = taskData.progress || 0;
+                    const currentStep = taskData.current_step || '';
+                    const logs = taskData.logs || [];
+
+                    console.log(`[Poll] 解析后 - state=${state}, progress=${progress}%, step=${currentStep}`);
+
+                    // 更新日志显示
+                    if (logs.length > 0) {
+                        updateTaskLogs(logs);
+                    }
+
+                    // 根据状态更新进度
+                    if (state === 'PENDING') {
+                        updateProgress('等待处理', '60%', '任务等待中...', 'uploading');
+                        // 继续轮询
+                        if (attempts < maxAttempts) {
+                            setTimeout(poll, 1000);
+                        } else {
+                            handleTimeout();
+                        }
+                    } else if (state === 'STARTED') {
+                        updateProgress('开始处理', '65%', '任务已开始...', 'uploading');
+                        if (attempts < maxAttempts) {
+                            setTimeout(poll, 1000);
+                        } else {
+                            handleTimeout();
+                        }
+                    } else if (state === 'PROGRESS') {
+                        // 计算进度：60% + progress的30%
+                        const displayProgress = Math.min(60 + (progress * 0.3), 95);
+                        const statusMsg = currentStep || message;
+                        updateProgress(currentStep || '处理中', `${Math.round(displayProgress)}%`, statusMsg, 'uploading');
+
+                        if (attempts < maxAttempts) {
+                            setTimeout(poll, 1000);
+                        } else {
+                            handleTimeout();
+                        }
+                    } else if (state === 'SUCCESS') {
+                        // 任务完成
+                        console.log(`[Poll] 任务完成！`, taskData);
+                        updateProgress('处理完成', '100%', '处理完成！', 'success');
+
+                        const chunksCount = taskData.result?.chunks_count || '未知';
+                        document.getElementById('progressStatus').innerHTML = `
+                            <strong>✅ 处理完成！</strong><br>
+                            文件名: ${fileName}<br>
+                            任务ID: ${taskId}<br>
+                            分块数: ${chunksCount}<br>
+                            文件已成功添加到知识库。
+                        `;
+
+                        // 2秒后关闭模态框并刷新列表
+                        setTimeout(async () => {
+                            closeUploadModal();
+                            await loadDocuments();
+                        }, 2000);
+                        return; // 结束轮询
+                    } else if (state === 'FAILURE') {
+                        // 任务失败
+                        console.error(`[Poll] 任务失败:`, taskData);
+                        const errorMsg = taskData.error || '未知错误';
+                        updateProgress('处理失败', '0%', `❌ 处理失败: ${errorMsg}`, 'error');
+                        document.getElementById('uploadBtn').disabled = false;
+                        return; // 结束轮询
+                    } else if (state === 'RETRY') {
+                        updateProgress('重试中', '60%', '任务重试中...', 'uploading');
+                        if (attempts < maxAttempts) {
+                            setTimeout(poll, 1000);
+                        } else {
+                            handleTimeout();
+                        }
+                    } else {
+                        // 未知状态
+                        console.warn(`[Poll] 未知状态: ${state}`);
+                        if (attempts < maxAttempts) {
+                            setTimeout(poll, 1000);
+                        } else {
+                            handleTimeout();
+                        }
+                    }
+
+                } catch (error) {
+                    console.error(`[Poll] 查询任务状态异常:`, error);
+                    if (attempts < maxAttempts) {
+                        console.log(`[Poll] 1秒后重试...`);
+                        setTimeout(poll, 1000);
+                    } else {
+                        console.error(`[Poll] 超时，停止轮询`);
+                        updateProgress('查询超时', '90%', '无法查询状态，请稍后刷新列表查看...', 'uploading');
+                        setTimeout(async () => {
+                            closeUploadModal();
+                            await loadDocuments();
+                        }, 3000);
+                    }
+                }
+            };
+
+            const handleTimeout = () => {
+                console.warn(`[Poll] 轮询超时（${maxAttempts}次）`);
+                updateProgress('轮询超时', '90%', '处理超时，请稍后刷新列表查看...', 'uploading');
+                setTimeout(async () => {
+                    closeUploadModal();
+                    await loadDocuments();
+                }, 3000);
+            };
+
+            // 开始轮询
+            poll();
+        }
+
+        // 模拟进度（用于更好的用户体验）
+        function simulateProgress(start, end, message, duration) {
+            return new Promise(resolve => {
+                const steps = 10;
+                const increment = (end - start) / steps;
+                const stepDuration = duration / steps;
+                let current = start;
+
+                const interval = setInterval(() => {
+                    current += increment;
+                    if (current >= end) {
+                        current = end;
+                        clearInterval(interval);
+                        resolve();
+                    }
+                    document.getElementById('progressPercent').textContent = Math.round(current) + '%';
+                    document.getElementById('progressBarFill').style.width = current + '%';
+                    document.getElementById('progressBarFill').textContent = Math.round(current) + '%';
+                    document.getElementById('progressStatus').textContent = message;
+                }, stepDuration);
+            });
+        }
+
+        // 初始加载
+        loadDocuments();
+    </script>
+</body>
+</html>
